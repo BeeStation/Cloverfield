@@ -1,0 +1,15 @@
+{
+    "ckey": "",     //canonical ckey
+    "compID": "",   //CID
+    "ip": "",       //IP Address, 0.0.0.0
+    "reason": "",   //Reason
+    "oakey": "",    //Original Admin Ckey? / UNK
+    "akey": "",     //Banning admin ckey? / UNK
+    "mins": 0,      //Ban Length
+    "timestamp": "",//Ban start timestamp???
+    "server": null,   //Local(str) or Global(null)
+    //Evasion stuff.
+
+    "previous": 0,  //Previous ban ID?
+    "chain": 0     //Current Evasion Streak.
+}

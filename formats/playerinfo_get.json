@@ -1,0 +1,14 @@
+{
+    "participated":"",  //Rounds participated in (Count)
+    "seen":"",          //Rounds seen in (Count)
+    "byondMajor":"",    //Latest seen BYOND Major, 513.XXXX
+    "byondMinor":"",    //Latest seen BYOND Minor, XXX.1534
+    "platform":"",      //OS?
+    //Browser shit. I got no idea for any of this rn.
+    "browser":"",
+    "browserVersion":"",
+    "browserMode":"",
+    //End browser shit.
+    "last_ip":"",       //Last used IP.
+    "last_compID":""    //Last used CID.
+}
