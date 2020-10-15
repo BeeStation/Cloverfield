@@ -1,11 +1,17 @@
 import hashlib
 import settings
 import helpers
-import database as db
+import neodb as db
+import sqlalchemy
+from neodb import Session, Player, Ban, sessionmaker
+from statics.database import FLAG_EXEMPT
 import json
 from flask import Flask, request, abort, jsonify
+from orm_serializers import JSON_Goon
+import datetime
 
 app = Flask(__name__)
+app.json_encoder = JSON_Goon #Overwrite the default encoder to serialize bans.
 
 @app.route('/')
 def hello_world():
@@ -19,7 +25,7 @@ def lincoln_numbers():
     TODO: Refluff and wire to a new system.
     """
     helpers.verify_api(request)
-    db.conn.log_statement('numbers/get', json.dumps(request.args))
+    # db.conn.log_statement('numbers/get', json.dumps(request.args))
     return "", 200
 
 @app.route('/bans/check/', methods = ['GET']) #BYPASS
@@ -27,20 +33,36 @@ def check_ban():
     helpers.check_allowed(True)
     #These are requested in a super weird format, *And are also our only form of connection log.*
     # ckey/compID/ip/record
-    CON_EXEMPT = False
-    if db.conn.check_exempt():
-        CON_EXEMPT = True
+    session: sqlalchemy.orm.Session = Session()
+    player: Player = db.Player.from_ckey(request.args.get('ckey'), session)
+    if player is None: #Player doesn't exist, construct them before continuing.
+        player = helpers.construct_player(session)
+        session.add(player)
 
     #Log Connection
-    if request.args.get('record'):
-        db.conn.log_connection()
+    helpers.log_connection(session)
 
     #Generate Return
-    if CON_EXEMPT: #Exempt. Don't hit the DB again.
+    if player.flags & FLAG_EXEMPT:#Exempt. We're done here.
+        session.commit()
         return jsonify({'exempt': True}) #NOTE: This stuff looks legacy. Is it still meant to be functional? -F
 
     #Interrogate the ban table for the latest.
 
+    #Update their previous data.
+    if request.args.get('ip'):
+        player.last_ip = helpers.ip_getint(request.args.get('ip'))
+    if request.args.get('compID'):
+        player.last_cid = request.args.get('compID')
+    player.lastseen = datetime.datetime.utcnow()
+
+    if len(player.bans):
+        session.commit()
+        return jsonify(player.bans)
+
+
+    #Nothin' of note. Close her up.
+    session.commit()
     return jsonify({'none': True})
 
 @app.route('/versions/add/') #VOID
@@ -50,16 +72,27 @@ def track_version():
     Logs to feedback-version
     """
     helpers.check_allowed(True)
-    db.conn.feedback_version()
+    # db.conn.feedback_version()
     # db.conn.log_statement('versions/add', json.dumps(request.args))
     return "", 200
 
 @app.route('/playerInfo/get/') #BYPASS
 def get_player_info(): #see formats/playerinfo_get.json
+    """
+    Get player participation statistics.
+    All of this data is going to be a bitch to calculate, so for now I'm shortcutting it.
+    This request failing to return data as expected is a major contributor to jointime slowdown.
+    TODO actually do.
+    """
     helpers.check_allowed(True)
+    # session: sqlalchemy.orm.Session = Session()
+    # player: Player = db.Player.from_ckey(request.args.get('ckey'), session)
+    # if player is None: #Player doesn't exist, construct them before continuing.
+    #     player = helpers.construct_player(session)
+    #     session.add(player)
+    # pass
 
-    # db.conn.log_statement('playerInfo/get', json.dumps(request.args))
-    return "", 200
+    return jsonify({'participated': 0, 'seen': 0})
 
 @app.route('/playerInfo/getIPs/')
 def get_player_ip_history():
