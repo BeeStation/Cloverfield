@@ -57,8 +57,12 @@ def check_ban():
     player.lastseen = datetime.datetime.utcnow()
 
     if len(player.bans):
+        x: list = player.bans.copy()
+        x.insert(0, len(player.bans)+1)
         session.commit()
-        return jsonify(player.bans)
+        return jsonify(x) #This is so fucking stupid.
+        #Returned format is fucking
+        #[1,{ban},{ban}]... You have len() in byond. *just get the last entry in the fucking list*
 
 
     #Nothin' of note. Close her up.
