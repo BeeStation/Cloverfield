@@ -78,7 +78,7 @@ def track_version():
     helpers.check_allowed(True)
     # db.conn.feedback_version()
     # db.conn.log_statement('versions/add', json.dumps(request.args))
-    return "", 200
+    return jsonify('OK')
 
 @app.route('/playerInfo/get/') #BYPASS
 def get_player_info(): #see formats/playerinfo_get.json
@@ -102,12 +102,22 @@ def get_player_info(): #see formats/playerinfo_get.json
 def get_player_ip_history():
     """
     Get the player's previous IP Addresses.
+    """#Used at: player_stats.dm#102, This was actually extremely nice and clean.
+    helpers.check_allowed(True)
+    session: sqlalchemy.orm.Session = Session()
+    #If a player gets passed to this and doesn't exist, just crash.
+    player: Player = db.Player.from_ckey(request.args.get('ckey'), session)
+    x = player.get_historic_inetaddr(session)
+    x.insert(0,{"last_seen":helpers.ip_getstr(player.last_ip)})
+    return jsonify(x)
 
-    TODO This format is gonna s u c k.
-    """
-    #Used at: player_stats.dm#102
+# @app.errorhandler(InternalServerError)
+# def handle_500(e):
+#     orig = getattr(e, "original_exception", None)
 
-    return "", 200
+#     if orig is None:
+#         return json.dumps({"Error":"EXPLICIT_500"}), 500
+#     return json.dumps({"Error":str(orig)}), 500
 
 #Whatever crossed was doing last night.
 if __name__ == '__main__':

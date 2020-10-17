@@ -3,6 +3,7 @@ import ipaddress
 from flask import request, abort
 import neodb as db
 import sqlalchemy
+import collections
 
 #Reusables, primarily key authentication
 def verify_api(packet):
@@ -33,9 +34,15 @@ def check_allowed(check_key=False, api_version=1):
         verify_api(request)
 
 def ip_getint(ip):
+    """
+    Get Int version of IP
+    """
     return int(ipaddress.IPv4Address(ip))
 
 def ip_getstr(ip):
+    """
+    Get string version of IP
+    """
     return str(ipaddress.IPv4Address(ip))
 
 def log_connection(session: sqlalchemy.orm.Session):
@@ -70,3 +77,4 @@ def construct_player(session: sqlalchemy.orm.Session):
     session.add(ply)
     session.commit()
     return ply
+

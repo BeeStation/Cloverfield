@@ -7,6 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker, Session
 from sqlalchemy.orm.exc import NoResultFound
 import datetime
+import collections
 
 FLAG_EXEMPT =   1<<1    #Exempt from bans. This is probably legacy but I'm supporting it anyways.
 
@@ -45,11 +46,28 @@ class Player(decbase):
         self.flags = 0
 
     @classmethod
-    def from_ckey(cls, ckey, session):
+    def from_ckey(cls, ckey, session: sqlalchemy.orm.Session):
         try:
             return session.query(cls).filter(cls.ckey == ckey).one()
         except NoResultFound:
             return None
+
+    def get_historic_inetaddr(self, session: sqlalchemy.orm.Session):
+        """
+        Returns a list of micro-dicts of the structure `[{ip,count},{ip,count},{ip,count}]`
+        """
+        x: list = list(session.query(Connection).filter(Connection.ckey == self.ckey))
+        ip_list = list()
+        for y in x:
+            ip_list.append(helpers.ip_getstr(y.ip))
+
+        ctr = collections.Counter(ip_list)
+        keys = list(ctr)
+        frequency_list = list()
+        for entry in keys:
+            frequency_list.append({"ip":entry, "times":ctr[entry]})
+
+        return frequency_list
 
 
 class Ban(decbase):
