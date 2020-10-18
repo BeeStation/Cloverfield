@@ -111,13 +111,29 @@ def get_player_ip_history():
     x.insert(0,{"last_seen":helpers.ip_getstr(player.last_ip)})
     return jsonify(x)
 
-# @app.errorhandler(InternalServerError)
-# def handle_500(e):
-#     orig = getattr(e, "original_exception", None)
+@app.route('/participation/record/')#VOID???
+def record_individual_participation():
+    """
+    Record individual player participation.
 
-#     if orig is None:
-#         return json.dumps({"Error":"EXPLICIT_500"}), 500
-#     return json.dumps({"Error":str(orig)}), 500
+    Relevant arguments:
+
+    `ckey`, ckey
+
+    `round_mode`, The gamemode currently being played.
+    """
+    #Okay. This may be how goon intends to define the start and end of a round.
+    #...If it is I'm probably going to drink myself to death at the end of this.
+    #Thankfully it's a void function so I can safely just neuter it for now.
+    return jsonify('OK')
+
+@app.route('/participation/record-multiple/')#VOID???
+def record_multi_participation():
+    #Same as above, but is passed multiple ckeys. In the future I'll probably make a DB func
+    #and make this iteratively call it.
+    #For now, I'm neutering these paths.
+    return jsonify('OK')
+
 
 #Whatever crossed was doing last night.
 if __name__ == '__main__':
