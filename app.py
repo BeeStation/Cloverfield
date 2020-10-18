@@ -26,7 +26,7 @@ def lincoln_numbers():
     """
     helpers.verify_api(request)
     # db.conn.log_statement('numbers/get', json.dumps(request.args))
-    return "", 200
+    return jsonify('OK')
 
 @app.route('/bans/check/', methods = ['GET']) #BYPASS
 def check_ban():
