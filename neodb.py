@@ -54,20 +54,10 @@ class Player(decbase):
 
     def get_historic_inetaddr(self, session: sqlalchemy.orm.Session):
         """
-        Returns a list of micro-dicts of the structure `[{ip,count},{ip,count},{ip,count}]`
+        Returns a list of IP ints associated with a player.
         """
         x: list = list(session.query(Connection).filter(Connection.ckey == self.ckey))
-        ip_list = list()
-        for y in x:
-            ip_list.append(helpers.ip_getstr(y.ip))
-
-        ctr = collections.Counter(ip_list)
-        keys = list(ctr)
-        frequency_list = list()
-        for entry in keys:
-            frequency_list.append({"ip":entry, "times":ctr[entry]})
-
-        return frequency_list
+        return x
 
 
 class Ban(decbase):

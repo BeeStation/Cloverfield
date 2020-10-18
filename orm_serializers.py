@@ -19,6 +19,7 @@ class JSON_Goon(JSONEncoder):
                     #Okay. All of this shit is related to evasion management.
                     #That sounds difficult. So for now we're going to blindly
                     #hardwire all of these to false.
+
                     'previous':  False,
                     'chain':  False,
                     'addTime': False
