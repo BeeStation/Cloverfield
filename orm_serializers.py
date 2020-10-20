@@ -14,15 +14,14 @@ class JSON_Goon(JSONEncoder):
                     'reason':  o.reason,
                     'oakey':  o.oakey,
                     'akey':  o.akey,
-                    'mins':  o.mins,
 
                     #Okay. All of this shit is related to evasion management.
                     #That sounds difficult. So for now we're going to blindly
                     #hardwire all of these to false.
+                    #Blindly mirror the data. You don't need to understand it, just pass it like a good storage system.
 
-                    'previous':  False,
-                    'chain':  False,
-                    'addTime': False
+                    'previous':  o.previous,
+                    'chain':  o.chain
                     }
             iterable = iter(o)
         except TypeError:

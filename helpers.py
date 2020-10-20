@@ -2,7 +2,7 @@ import settings
 import ipaddress
 from flask import request, abort
 import neodb as db
-import sqlalchemy
+import sqlalchemy, sqlalchemy.orm
 import collections
 
 #Reusables, primarily key authentication
@@ -78,3 +78,6 @@ def construct_player(session: sqlalchemy.orm.Session):
     session.commit()
     return ply
 
+def close_and_abort(session: sqlalchemy.orm.Session, code):
+    session.close()
+    abort(code)

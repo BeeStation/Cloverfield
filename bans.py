@@ -4,7 +4,10 @@ from neodb import Session, Player, Ban, sessionmaker
 from statics.database import FLAG_EXEMPT
 import datetime
 import sqlalchemy
-from flask import Blueprint, request, jsonify
+import sqlalchemy.orm
+import asyncio
+from flask import Blueprint, request, jsonify, abort
+from callback import hub_callback
 
 api_ban = Blueprint('bans', __name__)
 
@@ -30,8 +33,17 @@ def check_ban():
     #Interrogate the ban table for the latest.
     all_matching_bans: list = list()
 
-    #We get this for free.
-    all_matching_bans =+ player.bans.copy()
+    #Query CKEY bans directly so we can do matching.
+    all_matching_bans.extend(list(session.query(db.Ban).filter(db.Ban.ckey == player.ckey).filter(db.Ban.removed == False)))
+
+    #Retreive bans that match historic IP addresses.
+    all_matching_bans.extend(list(session.query(db.Ban).filter(db.Ban.ip.in_(player.get_historic_inetaddr(session))).filter(db.Ban.removed == False)))
+
+    #Likewise for CID
+    all_matching_bans.extend(list(session.query(db.Ban).filter(db.Ban.cid.in_(player.get_historic_cid(session))).filter(db.Ban.removed == False)))
+
+    #Deduplicate.
+    all_matching_bans = list(dict.fromkeys(all_matching_bans))
 
     #Update their previous data.
     if request.args.get('ip'):
@@ -51,3 +63,55 @@ def check_ban():
     #Nothin' of note. Close her up.
     session.commit()
     return jsonify({'none': True})
+
+@api_ban.route('/bans/add/')#Fucking CALLS BACK W H Y
+def issue_ban(): #OH GOD TIMESTAMPS ARE BYOND ERA
+    helpers.check_allowed(True)
+    session: sqlalchemy.orm.Session = Session()
+    new_ban = Ban(
+        ckey =      request.args.get('ckey'),
+        ip =        helpers.ip_getint(request.args.get('ip')),
+        cid =       request.args.get('compID'),
+        akey =      request.args.get('akey'),
+        oakey =     request.args.get('oakey'),
+        reason =    request.args.get('reason'),
+        timestamp = request.args.get('timestamp'),
+        previous =  request.args.get('previous'),
+        chain =     request.args.get('chain')
+        )
+    session.add(new_ban)
+    session.flush() #Push to database.
+    asyncio.run(hub_callback('addBan',{"ban":{
+        "id":new_ban.id,
+        "ckey":new_ban.ckey,
+        "ip":helpers.ip_getstr(new_ban.ip),
+        "compID":new_ban.cid,
+        "akey":new_ban.akey,
+        "oakey":new_ban.oakey,
+        "reason":new_ban.reason,
+        "timestamp":new_ban.timestamp,
+        "previous":new_ban.previous,
+        "chain":new_ban.chain
+    }}, secure=True))
+    session.commit()
+    return jsonify("OK")
+
+@api_ban.route('/bans/delete/')
+def remove_ban():
+    helpers.check_allowed(True)
+    session: sqlalchemy.orm.Session = Session()
+    #Time to do some integrity checking.
+    #All we *technically* need out of this request is an ID,
+    #but to preserve security and make things a bit harder
+    #to bruteforce, we're going to be exact about it and cross-check
+    #every detail we can.
+
+    #Retreive the assumedly targeted ban from the database.
+    target_ban: db.Ban = db.Ban.from_id(session, request.args.get('id'))
+
+    #Verify the data. If it's wrong close the session and abort.
+    if  target_ban.ckey is not request.args.get('ckey') or \
+        target_ban.cid is not request.args.get('compID') or \
+        target_ban.ip is not helpers.ip_getint(request.args.get('ip')):
+        helpers.close_and_abort(session, 400)
+    #Not finished tonight. TODO tomorrow.
