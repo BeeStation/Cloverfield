@@ -5,7 +5,7 @@ from orm_serializers import JSON_Goon
 
 
 #Import prints.
-import participation, secret_sauce, extras, bans
+import participation, secret_sauce, extras, bans, cloud
 
 app = Flask(__name__)
 
@@ -15,6 +15,8 @@ app.register_blueprint(participation.api_participation)
 app.register_blueprint(secret_sauce.api_secrets)
 app.register_blueprint(extras.api_extras)
 app.register_blueprint(bans.api_ban)
+app.register_blueprint(cloud.api_cloudhub) #COMPLETE
+
 
 app.json_encoder = JSON_Goon #Overwrite the default encoder to serialize bans.
 

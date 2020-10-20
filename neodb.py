@@ -35,8 +35,10 @@ class Player(decbase):
     lastseen =  Column('lastseen',  DateTime())
     flags =     Column('flags',     Integer()) #TINYINT
 
-    bans = relationship('Ban', back_populates='player', order_by="desc(Ban.id)")
-    connections = relationship('Connection', back_populates='player', order_by="desc(Connection.id)")
+    bans =          relationship('Ban',         back_populates='player', order_by="desc(Ban.id)")
+    connections =   relationship('Connection',  back_populates='player', order_by="desc(Connection.id)")
+    saves =         relationship('CloudSave',   back_populates='player')
+    data =          relationship('CloudData',   back_populates='player')
 
     def __init__(self, ckey, ip, cid):
         self.ckey = ckey
@@ -145,3 +147,35 @@ class Connection(decbase):
         self.ip = ip
         self.cid = cid
         self.initial = initial
+
+
+
+class CloudSave(decbase):
+    __tablename__ = 'cloudsaves'
+
+    id =        Column('id',            Integer(),      primary_key=True)
+    ckey =      Column('ckey',          String(32),     ForeignKey('players.ckey'))
+    save_name = Column('save_name',     String())
+    save =      Column('save',          String())
+
+    player =    relationship('Player', back_populates='saves')
+
+    def __init__(self, ckey, save_name, save):
+        self.ckey = ckey
+        self.save_name = save_name
+        self.save = save
+
+class CloudData(decbase):
+    __tablename__ = 'clouddata'
+
+    id =        Column('id',            Integer(),      primary_key=True)
+    ckey =      Column('ckey',          String(32),     ForeignKey('players.ckey'))
+    key =       Column('key',           String())
+    value =     Column('value',         String())
+
+    player =    relationship('Player', back_populates='data')
+
+    def __init__(self, ckey, key, value):
+        self.ckey = ckey
+        self.key = key
+        self.value = value

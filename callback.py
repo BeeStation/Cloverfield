@@ -11,6 +11,9 @@ import app
 # I hate it. I hate it. I hate it.
 # It's HILARIOUSLY insecure.
 
+
+#The majority of this routine was written up by Crossedfall, and nicked at his behest from his Status cog.
+#I just added a way to throw out the return data without even spending the time to process it.
 async def query_server(game_server:str = settings.ACTIVE_SERVER, game_port:int = settings.ACTIVE_PORT, querystr="?status", bother_parsing:bool = True) -> dict:
     """
     Queries the server for information

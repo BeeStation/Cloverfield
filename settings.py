@@ -1,7 +1,7 @@
 import hashlib
 
 API_KEY = "API_TOK"
-
+CLOUD_KEY = "STRING_OF_SHIT" #This one isn't even encrypted...
 
 ACTIVE_SERVER = "127.0.0.1"
 ACTIVE_PORT = 20005
