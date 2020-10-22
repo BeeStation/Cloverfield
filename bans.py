@@ -115,4 +115,7 @@ def remove_ban():
         target_ban.ip is not helpers.ip_getint(request.args.get('ip')):
         helpers.close_and_abort(session, 400)
     #Not finished tonight. TODO tomorrow.
+    #Ban is correctly selected. Mark it deleted.
+    target_ban.removed = True
+    session.commit()
     return
