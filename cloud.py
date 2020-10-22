@@ -32,7 +32,16 @@ def cloud_hell():
     session: sqlalchemy.orm.Session = Session()
     player: Player = Player.from_ckey(request.args.get('ckey'), session)
     if route == 'list':#Sure, fuck it, take everything.
-        return jsonify({"saves":list(player.saves),"cdata":[]})
+        saves = dict()
+        data = dict()
+
+        x: db.CloudSave
+        for x in player.saves:
+            saves.update({x.save_name:x.save})
+        x: db.CloudData
+        for x in player.data:
+            data.update({x.key:x.value})
+        return jsonify({"saves":saves,"cdata":data})
     if route == 'put': #Okay shit we actually have to store things.
         sav: CloudSave = CloudSave(
             player.ckey,

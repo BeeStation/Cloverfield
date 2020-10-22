@@ -2,9 +2,11 @@ import hashlib
 
 API_KEY = "API_TOK"
 CLOUD_KEY = "STRING_OF_SHIT" #This one isn't even encrypted...
+HUBLOG_KEY = "THREE_GODDAMN_TOKENS" #kill me now
 
 ACTIVE_SERVER = "127.0.0.1"
 ACTIVE_PORT = 20005
+
 MARIADB_SERVER = "127.0.0.1"
 MARIADB_PORT = 3306
 MARIADB_USER = "root"
@@ -15,3 +17,4 @@ CALLBACK_TIMEOUT = 10
 
 #Config Internal Transformations
 API_KEY = hashlib.md5(API_KEY.encode('utf-8')).hexdigest()
+HUBLOG_KEY = hashlib.md5(HUBLOG_KEY.encode('utf-8')).hexdigest()
