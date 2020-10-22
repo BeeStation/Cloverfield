@@ -41,6 +41,7 @@ def cloud_hell():
         x: db.CloudData
         for x in player.data:
             data.update({x.key:x.value})
+        session.commit()
         return jsonify({"saves":saves,"cdata":data})
     if route == 'put': #Okay shit we actually have to store things.
         sav: CloudSave = CloudSave(
