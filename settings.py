@@ -1,8 +1,15 @@
 import hashlib
 
+
+#General Routes
 API_KEY = "API_TOK"
-CLOUD_KEY = "STRING_OF_SHIT" #This one isn't even encrypted...
-HUBLOG_KEY = "THREE_GODDAMN_TOKENS" #kill me now
+#Cloud Saves #This one isn't even encrypted...
+CLOUD_KEY = "STRING_OF_SHIT"
+#Literally just round start and end. #kill me now
+HUBLOG_KEY = "THREE_GODDAMN_TOKENS"
+#Player Notes
+NOTES_KEY = "AUTH_NOTES"
+
 
 ACTIVE_SERVER = "127.0.0.1"
 ACTIVE_PORT = 20005

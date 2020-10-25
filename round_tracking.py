@@ -15,7 +15,7 @@ def handle_roundstate():
     session: sqlalchemy.orm.Session = Session()
     if(request.args.get('round_status') == 'start'):
         old_rnd: Round_Entry = Round_Entry.get_latest(session, request.args.get('round_server'))
-        if old_rnd.reason is None:  #The round was restarted without providing a reason.
+        if old_rnd is not None and old_rnd.reason is None:  #The round was restarted without providing a reason.
             old_rnd.reason = 3      #Fill in reason column to prevent repeat and to mark rounds as errored.
         #We need to create the round datum.
         rnd = Round_Entry(
@@ -33,7 +33,8 @@ def handle_roundstate():
         rnd.mode = request.args.get('mode')
         rnd.reason = request.args.get('end_reason')
         rnd.end_stamp = datetime.datetime.utcnow()
-        pass
+        session.commit()
+        return jsonify("OK")
     session.close()
     return abort(400)
 
@@ -53,7 +54,10 @@ def get_player_info(): #see formats/playerinfo_get.json
     #So for now, I'm going to tie both of them to the same value.
     #Actually, it's surprisingly fine. I just need to be careful about things.
     session: sqlalchemy.orm.Session = Session()
-    ply = Player.from_ckey(request.args.get('ckey'), session)
+    ply: Player = Player.from_ckey(request.args.get('ckey'), session)
+    #Turns out this route fires before bans are checked.
+    if ply is None:
+        return jsonify({'participated': 0, 'seen': 0})
     rec_par: Participation_Record = ply.participation.filter(Participation_Record.recordtype == "participation_basic").one_or_none()
     if rec_par is None: #New player, Fill in their record.
         rec_par = Participation_Record(
@@ -71,7 +75,7 @@ def get_player_info(): #see formats/playerinfo_get.json
         )
         session.add(rec_sen)
     session.commit()
-    return jsonify({'participated': rec_par.value, 'seen': rec_sen.value})
+    return jsonify({'participated': rec_par.value, 'seen': rec_sen.value, 'last_ip': helpers.ip_getstr(ply.last_ip), 'last_compID': str(ply.last_cid)})
 
 def verify_parser():
     if(request.args.get('token') is None):

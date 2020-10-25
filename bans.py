@@ -110,9 +110,9 @@ def remove_ban():
     target_ban: db.Ban = db.Ban.from_id(session, request.args.get('id'))
 
     #Verify the data. If it's wrong close the session and abort.
-    if  target_ban.ckey is not request.args.get('ckey') or \
-        target_ban.cid is not request.args.get('compID') or \
-        target_ban.ip is not helpers.ip_getint(request.args.get('ip')):
+    if  target_ban.ckey != request.args.get('ckey') or \
+        target_ban.cid != request.args.get('compID') or \
+        target_ban.ip != helpers.ip_getint(request.args.get('ip')):
         helpers.close_and_abort(session, 400)
     #Not finished tonight. TODO tomorrow.
     #Ban is correctly selected. Mark it deleted.

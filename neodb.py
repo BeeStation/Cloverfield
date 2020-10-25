@@ -40,6 +40,8 @@ class Player(decbase):
     saves =         relationship('CloudSave',               back_populates='player')
     data =          relationship('CloudData',               back_populates='player')
     participation = relationship('Participation_Record',    back_populates='player', lazy="dynamic")
+    notes =         relationship('PlayerNote',              back_populates='player', order_by="desc(PlayerNote.id)")
+    jobexp =        relationship('JobExperience',           back_populates='player', lazy="dynamic")
 
     def __init__(self, ckey, ip, cid):
         self.ckey = ckey
@@ -240,3 +242,50 @@ class Participation_Record(decbase):
         self.ckey = ckey
         self.recordtype = record_type
         self.value = value
+
+class PlayerNote(decbase):
+    __tablename__ = 'notes'
+
+    id =            Column('id',            Integer(),  primary_key=True)
+    server_key =    Column('server_key',    Integer())
+    server_id =     Column('server_id',     String())
+    ckey =          Column('ckey',          String(32), ForeignKey('players.ckey'))
+    akey =          Column('akey',          String(32))
+    note =          Column('note',          String())
+    deleted =       Column('deleted',       Integer(),  default=0)
+
+    player =    relationship('Player', back_populates='notes')
+
+    def __init__(self, server_key, server_id, ckey, akey, note):
+        self.server_key = server_key
+        self.server_id = server_id
+        self.ckey = ckey
+        self.akey = akey
+        self.note = note
+
+    @classmethod
+    def from_id(cls, session, id):
+        """
+        Retrieve a note from it's database ID.
+        """
+        try:
+            return session.query(cls).filter(cls.id == id).one()
+        except NoResultFound:
+            return None
+
+class JobExperience(decbase):
+    __tablename__ = 'jobtracking'
+
+    id =            Column('id',            Integer(),  primary_key=True)
+    ckey =          Column('ckey',          String(32), ForeignKey('players.ckey'))
+    key =           Column('key',           String())
+    val =           Column('value',         Integer())
+
+    player =    relationship('Player', back_populates='jobexp')
+
+    def __init__(self, ckey, key, val):
+        self.ckey = ckey
+        self.key = key
+        self.val = val
+
+    #TODO If this ever gets a public facing version, add a method to grab all of a certain key's entries for ranking.

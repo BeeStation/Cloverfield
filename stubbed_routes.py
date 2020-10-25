@@ -22,6 +22,10 @@ def route_addbanimmunity():
 def route_debugbans():
     return jsonify({"error":"unimplimented"}) #Debugging tool. Unnecessary for release.
 
+@api_deadroutes.route('/playtime/record-multiple/') #Might eventually be cool, but for now it's getting stubbed. Doesn't ever appear ingame.
+def route_trackplaytime():
+    return jsonify({"error":"unimplimented"})
+
 #Bundle of routes: Ban Parity.
 
 #This stuff seems to never be called, meaning I don't need to give a shit about them.
@@ -38,4 +42,3 @@ def route_updatelocalbans():
 def route_banparity():
     return jsonify({"error":"unimplimented"}) #Part of the above system.
 
-#Antagonist Tracking

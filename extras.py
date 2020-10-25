@@ -29,6 +29,25 @@ def get_player_ip_history():
     frequency_list.insert(0,{"last_seen":helpers.ip_getstr(player.last_ip)})
     return jsonify(frequency_list)
 
+@api_extras.route('/playerInfo/getCompIDs/')
+def get_player_cid_history(): #God put me into this world to do terrible things. Like copypasting entire functions because I'm lazy.
+    #This was actually extremely nice and clean.
+    helpers.check_allowed(True)
+    session: sqlalchemy.orm.Session = Session()
+    #If a player gets passed to this and doesn't exist, just crash.
+    player: Player = db.Player.from_ckey(request.args.get('ckey'), session)
+
+    #TODO #15 this code can probably be made a helper or deduped in some way
+    #to be reused for the GetCIDs call.
+    cid_list = player.get_historic_cid(session)
+    ctr = collections.Counter(cid_list)
+    frequency_list = list()
+    for entry in list(ctr):
+        frequency_list.append({"compID":str(entry), "times":ctr[entry]})
+
+    frequency_list.insert(0,{"last_seen":str(player.last_cid)})
+    return jsonify(frequency_list)
+
 @api_extras.route('/versions/add/') #VOID
 def track_version():
     """
