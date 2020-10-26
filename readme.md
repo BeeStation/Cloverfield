@@ -1,8 +1,5 @@
-**Test Data**
-Text API Key: `API_TOK`
-Text Hashed API Key: `e9a40d12921fb815aaf51a0b81d17ba6`
+**Cloverfield API**
 
-If Share is active:
-* API accessible at localhost:5555
-* Store database can be reached at localhost:3306
- * Creds are `root:dum`
+Configuration store is [`settings.py`](settings.py)
+
+`hub_callback` support is currently only present for one, predefined server. As the current need is not expected to require more, it is unlikely that limitation will be addressed.

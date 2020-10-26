@@ -2,23 +2,23 @@ import hashlib
 
 
 #General Routes
-API_KEY = "API_TOK"
+API_KEY =               ""
 #Cloud Saves #This one isn't even encrypted...
-CLOUD_KEY = "STRING_OF_SHIT"
+CLOUD_KEY =             ""
 #Literally just round start and end. #kill me now
-HUBLOG_KEY = "THREE_GODDAMN_TOKENS"
+HUBLOG_KEY =            ""
 #Player Notes
-NOTES_KEY = "AUTH_NOTES"
+NOTES_KEY =             ""
 
 
-ACTIVE_SERVER = "127.0.0.1"
-ACTIVE_PORT = 20005
+ACTIVE_SERVER =         ""
+ACTIVE_PORT =           0
 
-MARIADB_SERVER = "127.0.0.1"
-MARIADB_PORT = 3306
-MARIADB_USER = "root"
-MARIADB_PASS = "dum" #This is hilariously insecure probably.
-MARIADB_DBNAME = "goonhub"
+MARIADB_SERVER =        ""
+MARIADB_PORT =          0
+MARIADB_USER =          ""
+MARIADB_PASS =          ""
+MARIADB_DBNAME =        ""
 
 CALLBACK_TIMEOUT = 10
 

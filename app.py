@@ -3,6 +3,13 @@ import sqlalchemy
 from flask import Flask, request, abort, jsonify
 from orm_serializers import JSON_Goon
 
+#Cloverfield API System, Reverse engineered from Goonhub.
+# Made to operate with Project Clover, Beestation's modification of Goonstation.
+
+#10-26-20, V1-RC0, Made in a little over 2 weeks.
+#See settings.py for configuration options.
+#RC0 has callback support for only one server.
+
 
 #Import prints.
 import participation, secret_sauce, extras, bans, cloud, stubbed_routes, round_tracking, antags, secure, notes, exptracking
