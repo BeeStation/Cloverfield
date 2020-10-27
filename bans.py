@@ -119,3 +119,35 @@ def remove_ban():
     target_ban.removed = True
     session.commit()
     return
+
+@api_ban.route('/bans/edit/')
+def edit_ban():
+    helpers.check_allowed(True)
+    session: sqlalchemy.orm.Session = Session()
+    target_ban: db.Ban = db.Ban.from_id(session, request.args.get('id'))
+    if target_ban is not None:
+        target_ban.ckey =      request.args.get('ckey')
+        target_ban.ip =        helpers.ip_getint(request.args.get('ip')) if request.args.get('ip') != 'N/A' else -1
+        target_ban.cid =       request.args.get('compID') if request.args.get('compID') != 'N/A' else -1
+        target_ban.akey =      request.args.get('akey')
+        target_ban.reason =    request.args.get('reason')
+        target_ban.timestamp = request.args.get('timestamp')
+        session.flush()
+        asyncio.run(hub_callback('editBan',{"ban":{
+            "id":target_ban.id,
+            "ckey":target_ban.ckey,
+            "ip":target_ban.ip_getstr(target_ban.ip) if target_ban.ip != -1 else 'N/A',
+            "compID":target_ban.cid if target_ban.cid != -1 else 'N/A',
+            "akey":target_ban.akey,
+            "oakey":target_ban.oakey,
+            "reason":target_ban.reason,
+            "timestamp":target_ban.timestamp,
+            "previous":target_ban.previous,
+            "chain":target_ban.chain
+        }}, secure=True))
+        return jsonify("OK")
+    else:
+        session.close()
+        asyncio.run(hub_callback('editBan',{"Ban does not exist."}))
+        return jsonify("OK")
+    return {"ERROR"}
