@@ -6,7 +6,6 @@ import urllib.parse
 import html.parser as htmlparser
 import json
 from flask import Flask
-import app
 # This system is terrible.
 # I hate it. I hate it. I hate it.
 # It's HILARIOUSLY insecure.
@@ -36,28 +35,6 @@ async def query_server(game_server:str = settings.ACTIVE_SERVER, game_port:int =
             return parsed_data
         else:
             return 0
-        # +----------------+--------+
-        # | Reported Items | Return |
-        # +----------------+--------+
-        # | Version        | str    | SUPORTED NATIVELY
-        # | mode           | str    | SUPORTED NATIVELY
-        # | respawn        | int    | SUPORTED NATIVELY
-        # | enter          | int    | SUPORTED NATIVELY
-        # | vote           | int    | SUPORTED NATIVELY
-        # | ai             | int    | SUPORTED NATIVELY
-        # | host           | str    | SUPORTED NATIVELY
-        # | active_players | int    |
-        # | players        | int    | SUPORTED NATIVELY
-        # | revision       | str    | NOT SUPPORTED
-        # | revision_date  | date   | NOT SUPPORTED
-        # | admins         | int    | NOT HANDLED
-        # | gamestate      | int    | PART OF ROUND DURATION
-        # | map_name       | str    | SUPORTED NATIVELY
-        # | security_level | str    | NOT A CONCEPT
-        # | round_duration | int    | HANDLED ENTIRELY DIFFERENTLY.
-        # | shuttle_mode   | str    |
-        # | shuttle_timer  | str    | NAMED_DIFFERENTLY (shuttle_time)
-        # +----------------+--------+
 
     except (ConnectionRefusedError, socket.gaierror, socket.timeout):
         return None #Server is likely offline

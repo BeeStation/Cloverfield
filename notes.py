@@ -37,6 +37,8 @@ def handle_noteaccess():
         #The rest is ENTIERELY UP TO US, AND SHOWS **RAW HTML TO THE ADMINISTRATOR**
         session: sqlalchemy.orm.Session = Session()
         ply: db.Player = db.Player.from_ckey(request.args.get('ckey'), session)
+        if ply is None:
+            return 'Player has no database entry.', 200
         bigass_bundle: str = str()
         x: db.PlayerNote
         for x in ply.notes:

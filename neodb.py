@@ -106,7 +106,7 @@ class Ban(decbase):
     #IT'S TO THE POINT WHERE WE CAN'T EVEN ISSUE MINUTE-ACCURATE BANS ANYMORE, WE'RE USUALLY OFF BY ANYWHERE AROUND ±3 MINUTES. THIS ENTIRE SYSTEM IS A J O K E
     previous =  Column('previous',      Integer())
     chain =     Column('chain',         Integer())
-    removed =   Column('removed',       Integer())
+    removed =   Column('removed',       Integer(),  default=0)
 
 
     player = relationship('Player', back_populates='bans')

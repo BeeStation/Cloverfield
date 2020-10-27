@@ -18,7 +18,7 @@ def verify_api(packet):
     return abort(403)
 
 
-def check_allowed(check_key=False, api_version=1):
+def check_allowed(check_key=False, api_version=settings.API_REV):
     """
     Configurable integrity check function.
 
@@ -26,7 +26,7 @@ def check_allowed(check_key=False, api_version=1):
 
     `check_key` (Default `False`), Verify API access is allowed.
 
-    `api_version` (Default `1`), Current allowed API verson.
+    `api_version` (Default `API_REV`), Current allowed API verson.
     """
     if(int(request.args.get('data_version')) != api_version):
         abort(400)
@@ -37,13 +37,19 @@ def ip_getint(ip):
     """
     Get Int version of IP
     """
-    return int(ipaddress.IPv4Address(ip))
+    try:
+        return int(ipaddress.IPv4Address(ip))
+    except:
+        return 0
 
 def ip_getstr(ip):
     """
     Get string version of IP
     """
-    return str(ipaddress.IPv4Address(ip))
+    try:
+        return str(ipaddress.IPv4Address(ip))
+    except:
+        return 0
 
 def log_connection(session: sqlalchemy.orm.Session):
     """

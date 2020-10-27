@@ -70,8 +70,8 @@ def issue_ban(): #OH GOD TIMESTAMPS ARE BYOND ERA
     session: sqlalchemy.orm.Session = Session()
     new_ban = Ban(
         ckey =      request.args.get('ckey'),
-        ip =        helpers.ip_getint(request.args.get('ip')),
-        cid =       request.args.get('compID'),
+        ip =        helpers.ip_getint(request.args.get('ip')) if request.args.get('ip') != 'N/A' else -1,
+        cid =       request.args.get('compID') if request.args.get('compID') != 'N/A' else -1,
         akey =      request.args.get('akey'),
         oakey =     request.args.get('oakey'),
         reason =    request.args.get('reason'),
@@ -84,8 +84,8 @@ def issue_ban(): #OH GOD TIMESTAMPS ARE BYOND ERA
     asyncio.run(hub_callback('addBan',{"ban":{
         "id":new_ban.id,
         "ckey":new_ban.ckey,
-        "ip":helpers.ip_getstr(new_ban.ip),
-        "compID":new_ban.cid,
+        "ip":helpers.ip_getstr(new_ban.ip) if new_ban.ip != -1 else 'N/A',
+        "compID":new_ban.cid if new_ban.cid != -1 else 'N/A',
         "akey":new_ban.akey,
         "oakey":new_ban.oakey,
         "reason":new_ban.reason,

@@ -7,6 +7,9 @@ from flask import Blueprint, jsonify, abort, request
 import datetime
 
 api_rounds = Blueprint('rounds', __name__)
+latest_known_rounds: dict = dict() #{server_key:round_id}, {main:1}, used to invalidate JWTs
+
+
 
 @api_rounds.route('/roundstate')
 def handle_roundstate():
@@ -26,6 +29,7 @@ def handle_roundstate():
         )
         session.add(rnd)
         session.commit()
+        latest_known_rounds.update({request.args.get('round_server'):rnd.id}) #Cache the now updated ID variable for security usage.
         return jsonify("OK")
     if(request.args.get('round_status') == 'end'):
         rnd: Round_Entry = Round_Entry.get_latest(session, request.args.get('round_server'))

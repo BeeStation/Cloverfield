@@ -1,0 +1,15 @@
+JWT payload
+{
+    //REGISTERED FIELDS
+    exp: DATETIME - Expiration time, delta 2 hours from issuance
+    nbf: DATETIME - Issuance time
+    iss: STR - combined server identity.
+    aud: STATIC - 'CF_BANLIST'
+    iat: DATETIME - Issuance time.
+
+
+    rid: INT - Valid Round.
+    adm: STR - Issued Admin.
+    arv: INT - API Revision
+
+}
