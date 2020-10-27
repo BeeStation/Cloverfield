@@ -69,7 +69,7 @@ def usec_testjwt():
 
 
 #Ban Retrieval API
-@api_secure.route('/usec/bans/get')
+@api_secure.route('/usec/public/bans/get')
 def secure_get_banpanel():
     z = verify_secure()
     if z is not None:
@@ -209,7 +209,7 @@ def bans_sort_ip():
     return ret
 
 #Another annoyingly specific route. Stub and investigate later.
-@api_secure.route('/usec/bans/getPrevious')
+@api_secure.route('/usec/public/bans/getPrevious')
 def secure_getprevious_banpanel():
     verify_secure()
     return 200
