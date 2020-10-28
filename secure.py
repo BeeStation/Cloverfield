@@ -224,8 +224,8 @@ def verify_secure():
     try:
         x:dict=jwt.decode(bytes(request.args.get('token') if request.args.get('token') is not None else request.args.get('auth'), 'utf8'), settings.US_SECRET, algorithms='HS512', audience='CF_BANLIST')
         #FIXME CHECK DISABLED FOR TESTING, DO NOT RUN IN PROD.
-        # if int(x['rid']) != latest_known_rounds[request.args.get('servertag') if request.args.get('servertag') is not None else request.args.get('data_id')]: #Token expired by round change.
-        #     raise Exception("Token expired by round ID mismatch.")
+        if int(x['rid']) != latest_known_rounds[request.args.get('servertag') if request.args.get('servertag') is not None else request.args.get('data_id')]: #Token expired by round change.
+            raise Exception("Token expired by round ID mismatch.")
         if int(x['arv']) != settings.API_REV:
             raise Exception("!!!TOKEN CLAIMS VALID BUT API VERSION IS WRONG!!!") #This should never happen.
     except: #trap every single error and forbid.

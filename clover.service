@@ -1,0 +1,12 @@
+[Unit]
+Description=uWSGI instance to serve clover
+After=network.target
+
+[Service]
+Group=www-data
+WorkingDirectory=/opt/clover/cloverfield
+Environment="PATH=/opt/clover/cloverfield/venv/bin"
+ExecStart=/opt/clover/cloverfield/venv/bin/uwsgi --ini clover_uwsgi.ini
+
+[Install]
+WantedBy=multi-user.target
