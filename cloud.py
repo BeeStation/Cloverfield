@@ -74,7 +74,13 @@ def cloud_hell():
         session.add(dat)
         session.commit()
         return jsonify({"status":"OK"})
-    return abort(501)
+    if route == 'get': #Okay why does it fucking call this they got them the first time wtf
+        sav: CloudSave = session.query(CloudSave).filter(CloudSave.ckey == player.ckey).filter(CloudSave.save_name == request.args.get('name')).one_or_none()
+        if sav is None:
+            session.close()
+            abort(400) #What the fuck do you want us to get asshole?
+        return jsonify({"savedata":sav.save})
+    return jsonify({"status":"error","error":"Invalid Route. Contact Francinum."})
 
 def dump_user_data():
     pass

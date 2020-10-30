@@ -77,7 +77,7 @@ def log_connection(session: sqlalchemy.orm.Session):
                 "seen_basic",
                 0)
             session.add(rec_sen)
-        rec_sen += 1
+        rec_sen.value += 1
     session.commit()
 
 def construct_player(session: sqlalchemy.orm.Session):
