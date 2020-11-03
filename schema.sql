@@ -153,11 +153,12 @@ CREATE TABLE IF NOT EXISTS `rounds` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
--- Dumping structure for table goonhub.jobban
 CREATE TABLE IF NOT EXISTS `jobban` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ckey` tinytext NOT NULL,
   `rank` text NOT NULL,
+  `akey` tinytext NOT NULL,
+  `server_id` tinytext DEFAULT NULL,
   `issue_time` datetime NOT NULL COMMENT 'Database Only',
   `remove_time` datetime DEFAULT NULL COMMENT 'Database Only',
   `removed` tinyint(4) NOT NULL DEFAULT 0,
