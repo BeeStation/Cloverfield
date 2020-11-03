@@ -153,6 +153,22 @@ CREATE TABLE IF NOT EXISTS `rounds` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
+-- Dumping structure for table goonhub.jobban
+CREATE TABLE IF NOT EXISTS `jobban` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ckey` tinytext NOT NULL,
+  `rank` text NOT NULL,
+  `issue_time` datetime NOT NULL COMMENT 'Database Only',
+  `remove_time` datetime DEFAULT NULL COMMENT 'Database Only',
+  `removed` tinyint(4) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+
+
 -- Data exporting was unselected.
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
