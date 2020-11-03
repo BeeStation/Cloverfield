@@ -297,12 +297,16 @@ class JobBan(decbase):
     id =            Column('id',            Integer(),  primary_key=True)
     ckey =          Column('ckey',          String(32), ForeignKey('players.ckey'))
     rank =          Column('rank',          String())
+    akey =          Column('akey',          String())
     issue_time =    Column('issue_time',    DateTime(), default=datetime.datetime.utcnow)
     remove_time =   Column('remove_time',   DateTime())
     removed =       Column('removed',       Integer(),  default=0)
+    server_id =     Column('server_id',     String())
 
     player =    relationship('Player', back_populates='jobbans')
 
-    def __init__(self, ckey, rank):
+    def __init__(self, ckey, rank, akey, server_id):
         self.ckey = ckey
         self.rank = rank
+        self.akey = akey
+        self.server_id = server_id

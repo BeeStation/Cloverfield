@@ -191,7 +191,7 @@ def get_alljobban():
 def rem_jobban():
     helpers.check_allowed(True)
     session: sqlalchemy.orm.Session = Session()
-    if request.args.get('ckey') is None:
+    if request.args.get('ckey') is None or request.args.get('rank') is None:
         abort(400)
     ply: Player = Player.from_ckey(request.args.get('ckey'), session)
     ban: db.JobBan = ply.jobbans.filter(db.JobBan.removed == 0).filter(db.JobBan.rank == request.args.get('rank')).one_or_none()
@@ -206,11 +206,13 @@ def rem_jobban():
 def add_jobban():
     helpers.check_allowed(True)
     session: sqlalchemy.orm.Session = Session()
-    if request.args.get('ckey') is None:
+    if request.args.get('ckey') is None or request.args.get('rank') is None or request.args.get('akey') is None:
         abort(400)
     ban = db.JobBan(
         request.args.get('ckey'),
-        request.args.get('rank')
+        request.args.get('rank'),
+        request.args.get('akey'),
+        request.args.get('applicable_server')
     )
     session.add(ban)
     session.commit()
