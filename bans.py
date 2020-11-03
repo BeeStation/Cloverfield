@@ -151,3 +151,67 @@ def edit_ban():
         asyncio.run(hub_callback('editBan',{"Ban does not exist."}))
         return jsonify("OK")
     return {"ERROR"}
+
+# Jobban retrieval route
+# Expected Return Structure: {"ckey":["Bantype","Bantype","Bantype"]}
+# Arguments: ckey, removed (Include removed bans. Not currently implimented.)
+@api_ban.route('/jobbans/get/player/')
+def get_plyjobban():
+    helpers.check_allowed(True)
+    session: sqlalchemy.orm.Session = Session()
+    if request.args.get('ckey') is None:
+        abort(400)
+    ply: Player = Player.from_ckey(request.args.get('ckey'), session)
+    if ply is None: #Can't ban the nonexistant.
+        return jsonify({request.args.get('ckey'):[]})
+    banlist: list = ply.jobbans.filter(db.JobBan.removed == 0).all()
+    xlist = list()
+    x: db.JobBan
+    for x in banlist:
+        xlist.append(x.rank)
+    return jsonify({request.args.get('ckey'):xlist})
+
+#args removed (Unimplimented.)
+@api_ban.route('/jobbans/get/all/')
+def get_alljobban():
+    helpers.check_allowed(True)
+    session: sqlalchemy.orm.Session = Session()
+    allbans:list = list(session.query(db.JobBan).filter(db.JobBan.removed == 0).all())
+    ret:dict = dict()
+    x: db.JobBan
+    for x in allbans:
+        if x.ckey in ret:
+            ret[x.ckey].append(x.rank)
+        else:
+            ret[x.ckey]:list = list([x.rank])
+    return jsonify(ret)
+
+# Arguments: ckey, rank
+@api_ban.route('/jobbans/del/')
+def rem_jobban():
+    helpers.check_allowed(True)
+    session: sqlalchemy.orm.Session = Session()
+    if request.args.get('ckey') is None:
+        abort(400)
+    ply: Player = Player.from_ckey(request.args.get('ckey'), session)
+    ban: db.JobBan = ply.jobbans.filter(db.JobBan.removed == 0).filter(db.JobBan.rank == request.args.get('rank')).one_or_none()
+    if ban is None:
+        jsonify({"Error":"Ban does not exist or is already removed."})
+    ban.remove_time = datetime.datetime.utcnow()
+    ban.removed = True
+    session.commit()
+    return jsonify({"OK":"Ban Removed."})
+
+@api_ban.route('/jobbans/add/')
+def add_jobban():
+    helpers.check_allowed(True)
+    session: sqlalchemy.orm.Session = Session()
+    if request.args.get('ckey') is None:
+        abort(400)
+    ban = db.JobBan(
+        request.args.get('ckey'),
+        request.args.get('rank')
+    )
+    session.add(ban)
+    session.commit()
+    return jsonify({"OK":"Ban Issued."})

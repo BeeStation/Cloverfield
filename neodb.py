@@ -42,6 +42,7 @@ class Player(decbase):
     participation = relationship('Participation_Record',    back_populates='player', lazy="dynamic")
     notes =         relationship('PlayerNote',              back_populates='player', order_by="desc(PlayerNote.id)")
     jobexp =        relationship('JobExperience',           back_populates='player', lazy="dynamic")
+    jobbans =       relationship('JobBan',                  back_populates='player', lazy="dynamic")
 
     def __init__(self, ckey, ip, cid):
         self.ckey = ckey
@@ -289,3 +290,19 @@ class JobExperience(decbase):
         self.val = val
 
     #TODO If this ever gets a public facing version, add a method to grab all of a certain key's entries for ranking.
+
+class JobBan(decbase):
+    __tablename__ = 'jobban'
+
+    id =            Column('id',            Integer(),  primary_key=True)
+    ckey =          Column('ckey',          String(32), ForeignKey('players.ckey'))
+    rank =          Column('rank',          String())
+    issue_time =    Column('issue_time',    DateTime(), default=datetime.datetime.utcnow)
+    remove_time =   Column('remove_time',   DateTime())
+    removed =       Column('removed',       Integer(),  default=0)
+
+    player =    relationship('Player', back_populates='jobbans')
+
+    def __init__(self, ckey, rank):
+        self.ckey = ckey
+        self.rank = rank
