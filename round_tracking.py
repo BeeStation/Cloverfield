@@ -11,7 +11,7 @@ latest_known_rounds: dict = dict() #{server_key:round_id}, {main:1}, used to inv
 
 
 
-@api_rounds.route('/roundstate')
+@api_rounds.route('/roundstate', methods=['GET','POST'])
 def handle_roundstate():
     verify_parser()
     #Switch by round_status argument

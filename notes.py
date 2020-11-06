@@ -8,7 +8,7 @@ import sqlalchemy.orm
 
 api_notes = Blueprint('notes', __name__)
 
-@api_notes.route('/notes/')
+@api_notes.route('/notes/', methods=['GET','POST'])
 def handle_noteaccess():
     verify_notes()
     if request.args.get('action') == 'add':

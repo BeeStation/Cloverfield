@@ -212,7 +212,7 @@ def add_jobban():
         request.args.get('ckey'),
         request.args.get('rank'),
         request.args.get('akey'),
-        request.args.get('applicable_server')
+        request.args.get('applicable_server') if request.args.get('applicable_server') != "" else None
     )
     session.add(ban)
     session.commit()
