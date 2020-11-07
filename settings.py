@@ -29,7 +29,7 @@ CALLBACK_TIMEOUT = 10
 API_REV = 1
 
 #Config Internal Transformations
-API_KEY = hashlib.md5(API_KEY.encode('utf-8')).hexdigest()
-HUBLOG_KEY = hashlib.md5(HUBLOG_KEY.encode('utf-8')).hexdigest()
+API_KEY = hashlib.sha256(API_KEY.encode('utf-8')).hexdigest()
+HUBLOG_KEY = hashlib.sha256(HUBLOG_KEY.encode('utf-8')).hexdigest()
 
 
