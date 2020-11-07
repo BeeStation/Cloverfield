@@ -69,7 +69,7 @@ def log_connection(session: sqlalchemy.orm.Session):
         db.Round_Entry.get_latest(session, request.args.get('data_id')).id,
     )
     session.add(conlog)
-    if request.args.get('record') is True:#First connection this round, track the fact that they have at least seen it.
+    if bool(request.args.get('record')) is True:#First connection this round, track the fact that they have at least seen it.
         rec_sen: db.Participation_Record = session.query(db.Participation_Record).filter(db.Participation_Record.ckey == request.args.get('ckey')).filter(db.Participation_Record.recordtype == "seen_basic").one_or_none()
         if rec_sen is None: #New player, Fill in the part of their record we care about right now.
             rec_sen = db.Participation_Record(
