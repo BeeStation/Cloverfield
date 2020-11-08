@@ -1,4 +1,4 @@
-import cloverfield.db
+from cloverfield import db
 
 from cloverfield.db import session, Player
 from cloverfield.util.helpers import check_allowed, ip_getstr

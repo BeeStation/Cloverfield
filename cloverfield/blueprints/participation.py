@@ -1,4 +1,4 @@
-import cloverfield.db
+from cloverfield import db
 
 from cloverfield.settings import *
 from cloverfield.util.helpers import verify_api
