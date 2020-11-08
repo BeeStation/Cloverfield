@@ -1,29 +1,32 @@
-import helpers
-import neodb as db
-from neodb import Session, Player, Ban, sessionmaker
-from statics.database import FLAG_EXEMPT
+import cloverfield.db
+
+from cloverfield.db import Session, Player, Ban, sessionmaker
+from cloverfield.util.helpers import check_allowed, construct_player, log_connection, ip_getint, ip_getstr, close_and_abort
+from cloverfield.statics.database import *
+from cloverfield.util.topic import hub_callback
+
 import datetime
 import sqlalchemy
 import sqlalchemy.orm
 import asyncio
 from flask import Blueprint, request, jsonify, abort
-from callback import hub_callback
+
 
 api_ban = Blueprint('bans', __name__)
 
 @api_ban.route('/bans/check/', methods = ['GET']) #BYPASS
 def check_ban():
-    helpers.check_allowed(True)
+    check_allowed(True)
     #These are requested in a super weird format, *And are also our only form of connection log.*
     # ckey/compID/ip/record
     session: sqlalchemy.orm.Session = Session()
     player: Player = db.Player.from_ckey(request.args.get('ckey'), session)
     if player is None: #Player doesn't exist, construct them before continuing.
-        player = helpers.construct_player(session)
+        player = construct_player(session)
         session.add(player)
 
     #Log Connection
-    helpers.log_connection(session)
+    log_connection(session)
 
     #Generate Return
     if player.flags & FLAG_EXEMPT:#Exempt. We're done here.
@@ -47,7 +50,7 @@ def check_ban():
 
     #Update their previous data.
     if request.args.get('ip'):
-        player.last_ip = helpers.ip_getint(request.args.get('ip'))
+        player.last_ip = ip_getint(request.args.get('ip'))
     if request.args.get('compID'):
         player.last_cid = request.args.get('compID')
     player.lastseen = datetime.datetime.utcnow()
@@ -66,11 +69,11 @@ def check_ban():
 
 @api_ban.route('/bans/add/')#Fucking CALLS BACK W H Y
 def issue_ban(): #OH GOD TIMESTAMPS ARE BYOND ERA
-    helpers.check_allowed(True)
+    check_allowed(True)
     session: sqlalchemy.orm.Session = Session()
     new_ban = Ban(
         ckey =      request.args.get('ckey'),
-        ip =        helpers.ip_getint(request.args.get('ip')) if request.args.get('ip') != 'N/A' else -1,
+        ip =        ip_getint(request.args.get('ip')) if request.args.get('ip') != 'N/A' else -1,
         cid =       request.args.get('compID') if request.args.get('compID') != 'N/A' else -1,
         akey =      request.args.get('akey'),
         oakey =     request.args.get('oakey'),
@@ -84,7 +87,7 @@ def issue_ban(): #OH GOD TIMESTAMPS ARE BYOND ERA
     asyncio.run(hub_callback('addBan',{"ban":{
         "id":new_ban.id,
         "ckey":new_ban.ckey,
-        "ip":helpers.ip_getstr(new_ban.ip) if new_ban.ip != -1 else 'N/A',
+        "ip":ip_getstr(new_ban.ip) if new_ban.ip != -1 else 'N/A',
         "compID":new_ban.cid if new_ban.cid != -1 else 'N/A',
         "akey":new_ban.akey,
         "oakey":new_ban.oakey,
@@ -98,7 +101,7 @@ def issue_ban(): #OH GOD TIMESTAMPS ARE BYOND ERA
 
 @api_ban.route('/bans/delete/')
 def remove_ban():
-    helpers.check_allowed(True)
+    check_allowed(True)
     session: sqlalchemy.orm.Session = Session()
     #Time to do some integrity checking.
     #All we *technically* need out of this request is an ID,
@@ -112,8 +115,8 @@ def remove_ban():
     #Verify the data. If it's wrong close the session and abort.
     if  target_ban.ckey != request.args.get('ckey') or \
         target_ban.cid != request.args.get('compID') or \
-        target_ban.ip != helpers.ip_getint(request.args.get('ip')):
-        helpers.close_and_abort(session, 400)
+        target_ban.ip != ip_getint(request.args.get('ip')):
+        close_and_abort(session, 400)
     #Not finished tonight. TODO tomorrow.
     #Ban is correctly selected. Mark it deleted.
     target_ban.removed = True
@@ -122,12 +125,12 @@ def remove_ban():
 
 @api_ban.route('/bans/edit/')
 def edit_ban():
-    helpers.check_allowed(True)
+    check_allowed(True)
     session: sqlalchemy.orm.Session = Session()
     target_ban: db.Ban = db.Ban.from_id(session, request.args.get('id'))
     if target_ban is not None:
         target_ban.ckey =      request.args.get('ckey')
-        target_ban.ip =        helpers.ip_getint(request.args.get('ip')) if request.args.get('ip') != 'N/A' else -1
+        target_ban.ip =        ip_getint(request.args.get('ip')) if request.args.get('ip') != 'N/A' else -1
         target_ban.cid =       request.args.get('compID') if request.args.get('compID') != 'N/A' else -1
         target_ban.akey =      request.args.get('akey')
         target_ban.reason =    request.args.get('reason')
@@ -157,7 +160,7 @@ def edit_ban():
 # Arguments: ckey, removed (Include removed bans. Not currently implimented.)
 @api_ban.route('/jobbans/get/player/')
 def get_plyjobban():
-    helpers.check_allowed(True)
+    check_allowed(True)
     session: sqlalchemy.orm.Session = Session()
     if request.args.get('ckey') is None:
         abort(400)
@@ -174,7 +177,7 @@ def get_plyjobban():
 #args removed (Unimplimented.)
 @api_ban.route('/jobbans/get/all/')
 def get_alljobban():
-    helpers.check_allowed(True)
+    check_allowed(True)
     session: sqlalchemy.orm.Session = Session()
     allbans:list = list(session.query(db.JobBan).filter(db.JobBan.removed == 0).all())
     ret:dict = dict()
@@ -189,7 +192,7 @@ def get_alljobban():
 # Arguments: ckey, rank
 @api_ban.route('/jobbans/del/')
 def rem_jobban():
-    helpers.check_allowed(True)
+    check_allowed(True)
     session: sqlalchemy.orm.Session = Session()
     if request.args.get('ckey') is None or request.args.get('rank') is None:
         abort(400)
@@ -204,7 +207,7 @@ def rem_jobban():
 
 @api_ban.route('/jobbans/add/')
 def add_jobban():
-    helpers.check_allowed(True)
+    check_allowed(True)
     session: sqlalchemy.orm.Session = Session()
     if request.args.get('ckey') is None or request.args.get('rank') is None or request.args.get('akey') is None:
         abort(400)

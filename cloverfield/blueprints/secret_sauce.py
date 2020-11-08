@@ -1,6 +1,7 @@
-import helpers
+from cloverfield.util.helpers import verify_api
+from cloverfield.util.topic import hub_callback
+
 import random
-from callback import hub_callback
 from flask import Blueprint, jsonify, request
 import asyncio
 
@@ -13,7 +14,7 @@ def lincoln_numbers():
 
     TODO: Refluff and wire to a new system.
     """
-    helpers.verify_api(request)
+    verify_api(request)
     numbas:list = list()
     for x in range(25): #pylint: disable=unused-variable
         numbas.append(random.randint(1,99))

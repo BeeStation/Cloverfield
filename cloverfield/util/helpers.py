@@ -1,7 +1,9 @@
-import settings
+from cloverfield.settings import *
+import cloverfield.db
+
 import ipaddress
 from flask import request, abort
-import neodb as db
+
 import sqlalchemy, sqlalchemy.orm
 import collections
 
@@ -13,12 +15,12 @@ def verify_api(packet):
     auth = packet.args.get('auth')
     if(not auth):
         abort(401)
-    if(auth == settings.API_KEY):
+    if(auth == API_KEY):
         return
     return abort(403)
 
 
-def check_allowed(check_key=False, api_version=settings.API_REV):
+def check_allowed(check_key=False, api_version=API_REV):
     """
     Configurable integrity check function.
 

@@ -1,7 +1,7 @@
-import settings
-import sqlalchemy
-from flask import Flask, request, abort, jsonify
-from orm_serializers import JSON_Goon
+from cloverfield.util.orm_serializers import JSON_Goon
+
+from flask import Flask
+
 
 #Cloverfield API System, Reverse engineered from Goonhub.
 # Made to operate with Project Clover, Beestation's modification of Goonstation.
@@ -12,7 +12,7 @@ from orm_serializers import JSON_Goon
 
 
 #Import prints.
-import participation, secret_sauce, extras, bans, cloud, stubbed_routes, round_tracking, antags, secure, notes, exptracking
+from cloverfield.blueprints import participation, secret_sauce, extras, bans, cloud, stubbed_routes, round_tracking, antags, secure, notes, exptracking
 
 app = Flask(__name__)
 
@@ -32,6 +32,3 @@ app.register_blueprint(exptracking.api_exptrak)
 
 app.json_encoder = JSON_Goon #Overwrite the default encoder to serialize bans.
 
-#Whatever crossed was doing last night.
-if __name__ == '__main__':
-    app.run()

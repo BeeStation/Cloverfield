@@ -1,14 +1,20 @@
+import cloverfield.db
+
+from cloverfield.settings import *
+from cloverfield.db import Session
+from cloverfield.util.helpers import ip_getint
+from cloverfield.blueprints.round_tracking import latest_known_rounds
+
 from flask import request, Blueprint, abort, jsonify
 import jwt
 import datetime
-import settings
-import neodb as db
+
 import sqlalchemy.orm
-from neodb import Session
+
 import re
 import flask.json
-import helpers
-from round_tracking import latest_known_rounds
+
+
 api_secure = Blueprint('secure', __name__)
 
 #Isolation file for the ban panel.
@@ -42,7 +48,7 @@ api_secure = Blueprint('secure', __name__)
 #Auth route, see formats/ultrasec.txt
 @api_secure.route('/usec/auth/get/')
 def usec_issuejwt():
-    if int(request.args.get('data_version')) != settings.API_REV:
+    if int(request.args.get('data_version')) != API_REV:
         abort(400)
     pl = {
         #Qualified Claims
@@ -55,9 +61,9 @@ def usec_issuejwt():
         #Private Use Claims
         'rid': latest_known_rounds[request.args.get('servertag')],  #Lock tokens to individual rounds.
         'adm': request.args.get('administrator'),                   #Auditing.
-        'arv': settings.API_REV
+        'arv': API_REV
     }
-    b_token = jwt.encode(pl,settings.US_SECRET,algorithm='HS512')
+    b_token = jwt.encode(pl,US_SECRET,algorithm='HS512')
     str_token = b_token.decode('utf-8')
     return jsonify({"token":str_token})
 
@@ -104,7 +110,7 @@ def bans_sort_all():
             db.Ban.ckey.like(searchval),
             db.Ban.akey.like(searchval),
             db.Ban.reason.like(searchval),
-            db.Ban.ip.like(helpers.ip_getint(searchval)),
+            db.Ban.ip.like(ip_getint(searchval)),
             db.Ban.cid.like(searchval),
             db.Ban.oakey.like(searchval)
         ))
@@ -197,7 +203,7 @@ def bans_sort_ip():
         searchval = '%'
     query: sqlalchemy.orm.query = session.query(db.Ban).filter(db.Ban.removed == int(request.args.get('removed')))\
         .filter(sqlalchemy.or_(
-            db.Ban.ip.like(helpers.ip_getint(searchval))
+            db.Ban.ip.like(ip_getint(searchval))
         ))
     ret = dict()
     bans: list = query.limit(int(request.args.get('limit'))).all()
@@ -222,11 +228,11 @@ def secure_getprevious_banpanel():
 
 def verify_secure():
     try:
-        x:dict=jwt.decode(bytes(request.args.get('token') if request.args.get('token') is not None else request.args.get('auth'), 'utf8'), settings.US_SECRET, algorithms='HS512', audience='CF_BANLIST')
+        x:dict=jwt.decode(bytes(request.args.get('token') if request.args.get('token') is not None else request.args.get('auth'), 'utf8'), US_SECRET, algorithms='HS512', audience='CF_BANLIST')
         #FIXME CHECK DISABLED FOR TESTING, DO NOT RUN IN PROD.
         if int(x['rid']) != latest_known_rounds[request.args.get('servertag') if request.args.get('servertag') is not None else request.args.get('data_id')]: #Token expired by round change.
             raise Exception("Token expired by round ID mismatch.")
-        if int(x['arv']) != settings.API_REV:
+        if int(x['arv']) != API_REV:
             raise Exception("!!!TOKEN CLAIMS VALID BUT API VERSION IS WRONG!!!") #This should never happen.
     except: #trap every single error and forbid.
         return {"error":"Token invalid, it may be expired."}

@@ -1,10 +1,12 @@
-from flask import Blueprint, jsonify, request, abort
-import settings
-import helpers
-import neodb as db
-from neodb import Session
-import sqlalchemy.orm
+import cloverfield.db
 
+from cloverfield.settings import *
+from cloverfield.util.helpers import close_and_abort
+from cloverfield.db import Session
+
+from flask import Blueprint, jsonify, request, abort
+
+import sqlalchemy.orm
 
 api_notes = Blueprint('notes', __name__)
 
@@ -27,7 +29,7 @@ def handle_noteaccess():
         session: sqlalchemy.orm.Session = Session()
         note: db.PlayerNote = db.PlayerNote.from_id(session, request.args.get('id'))
         if note is None:
-            helpers.close_and_abort(session, 400)
+            close_and_abort(session, 400)
         note.deleted = True
         session.commit()
         return jsonify({"OK":"Note Marked Deleted."})
@@ -53,5 +55,5 @@ def handle_noteaccess():
 def verify_notes():
     if(request.args.get('auth') is None):
         abort(401)
-    if(request.args.get('auth') != settings.NOTES_KEY):
+    if(request.args.get('auth') != NOTES_KEY):
         abort(403)

@@ -1,23 +1,24 @@
-import settings
-import helpers
+from cloverfield.settings import *
+from cloverfield.util.helpers import ip_getstr
+from cloverfield.statics.database import * # pylint: disable=unused-wildcard-import
+
 import sqlalchemy
 from sqlalchemy import * # pylint: disable=unused-wildcard-import
-from urllib.parse import quote
+
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker, Session
 from sqlalchemy.orm.exc import NoResultFound
-from statics.database import * # pylint: disable=unused-wildcard-import
+
+from urllib.parse import quote
+
 import datetime
 import collections
-
-FLAG_EXEMPT =   1<<1    #Exempt from bans. This is probably legacy but I'm supporting it anyways.
-
 
 Session = sessionmaker()
 Session.configure(bind = create_engine((
     'mysql://'+
-    quote(settings.MARIADB_USER)+':'+quote(settings.MARIADB_PASS)+
-    '@'+quote(settings.MARIADB_SERVER)+':'+quote(str(settings.MARIADB_PORT))+'/'+quote(settings.MARIADB_DBNAME)
+    quote(MARIADB_USER)+':'+quote(MARIADB_PASS)+
+    '@'+quote(MARIADB_SERVER)+':'+quote(str(MARIADB_PORT))+'/'+quote(MARIADB_DBNAME)
     )))
 
 decbase = declarative_base()
@@ -72,7 +73,7 @@ class Player(decbase):
         ip_list: list = list()
         if(return_type == RET_STR):
             for y in x:
-                ip_list.append(helpers.ip_getstr(y.ip))
+                ip_list.append(ip_getstr(y.ip))
         else:
             for y in x:
                 ip_list.append(y.ip)

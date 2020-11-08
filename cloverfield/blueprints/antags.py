@@ -1,12 +1,14 @@
+import cloverfield.db
+
+from cloverfield.util.helpers import check_allowed
+from cloverfield.db import Player, Session
+
 from flask import Blueprint, jsonify, request
-import helpers
-import neodb as db
-from neodb import Session
-import sqlalchemy.orm
 
 api_antags = Blueprint('antagonist_history', __name__)
 
-#I hate that this has to be here.
+#I hate that this has to be here. -franc
+#This doesn't have to be here tho -qwerty
 antag_types = [
     'alien',
     'blob',
@@ -29,7 +31,7 @@ antag_types = [
 
 @api_antags.route('/antags/history/')
 def route_antaghistory_singlemode():
-    helpers.check_allowed(True)
+    check_allowed(True)
     #This route is gonna be pretty ugly.
     i = 0
     history: dict = dict()
@@ -71,7 +73,7 @@ def get_antaghistory(ckey, mode, session, calc:bool = False):
 
 @api_antags.route('/antags/record/')
 def route_antaghistory_record(): #RECORDS /SELECTION/, not /PARTICIPATION/
-    helpers.check_allowed(True)
+    check_allowed(True)
     if request.args.get('assday'):
         return jsonify({"WOOP WOOP":"ASS. DAY.", "info":"Data discarded."})
 

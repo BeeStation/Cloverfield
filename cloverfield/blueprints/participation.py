@@ -1,9 +1,12 @@
+import cloverfield.db
+
+from cloverfield.settings import *
+from cloverfield.util.helpers import verify_api
+from cloverfield.db import Session
+
 from flask import Blueprint, request, jsonify, abort
 import sqlalchemy.orm
-import settings
-import helpers
-import neodb as db
-from neodb import Session
+
 
 api_participation = Blueprint('participation', __name__)
 
@@ -28,7 +31,7 @@ def record_individual_participation():
 
 @api_participation.route('/participation/record-multiple/')#VOID???
 def record_multi_participation():
-    helpers.verify_api(request)
+    verify_api(request)
     #Same as above, but is passed multiple ckeys. In the future I'll probably make a DB func
     #and make this iteratively call it.
     #For now, I'm neutering these paths.

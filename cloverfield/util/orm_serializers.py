@@ -1,4 +1,5 @@
-from neodb import Player, Ban
+from cloverfield.db import Player, Ban
+
 from flask.json import JSONEncoder
 
 class JSON_Goon(JSONEncoder):
