@@ -1,8 +1,8 @@
-import neodb as db
-import helpers
-import settings
-from neodb import Session
-import sqlalchemy.orm
+from cloverfield import db
+
+from cloverfield.util.helpers import check_allowed
+from cloverfield.db import session
+
 from flask import request, Blueprint, abort, jsonify
 #Cloverfield specific routes to replace the BYOND hub in the business of job experience tracking.
 
@@ -12,9 +12,8 @@ api_exptrak = Blueprint('exp_tracking', __name__)
 #FORMAT: ckey = Player.ckey, type = JobExperience.key
 @api_exptrak.route('/clover/xptrak/get/')
 def get_jobexp():
-    helpers.check_allowed(True)
-    session: sqlalchemy.orm.Session = Session()
-    ply: db.Player = db.Player.from_ckey(request.args.get("ckey"), session)
+    check_allowed(True)
+    ply: db.Player = db.Player.from_ckey(request.args.get("ckey"))
     record: db.JobExperience = ply.jobexp.filter(db.JobExperience.key == request.args.get("type")).one_or_none()
     if(record is None):#Don't bother creating the record for now, we have more of these to handle.
         session.close()
@@ -24,9 +23,8 @@ def get_jobexp():
 #FORMAT: ckey = Player.ckey, type = JobExperience.key, val = JobExperience.value
 @api_exptrak.route('/clover/xptrak/set/')
 def set_jobexp():
-    helpers.check_allowed(True)
-    session: sqlalchemy.orm.Session = Session()
-    ply: db.Player = db.Player.from_ckey(request.args.get("ckey"), session)
+    check_allowed(True)
+    ply: db.Player = db.Player.from_ckey(request.args.get("ckey"))
     record: db.JobExperience = ply.jobexp.filter(db.JobExperience.key == request.args.get("type")).one_or_none()
     if(record is None):
         record = db.JobExperience(

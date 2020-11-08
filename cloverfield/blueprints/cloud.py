@@ -1,10 +1,9 @@
-import settings
-import helpers
-import neodb as db
-import sqlalchemy
-import sqlalchemy.orm
+from cloverfield import db
+
+from cloverfield.settings import *
+from cloverfield.db import session, Player, CloudSave, CloudData
+
 import urllib.parse
-from neodb import Session, Player, CloudSave, CloudData
 from flask import Blueprint, request, abort, jsonify
 
 api_cloudhub = Blueprint('cloud', __name__)
@@ -29,8 +28,7 @@ api_cloudhub = Blueprint('cloud', __name__)
 def cloud_hell():
     verify_cloud()
     route:str = list(request.args)[0]
-    session: sqlalchemy.orm.Session = Session()
-    player: Player = Player.from_ckey(request.args.get('ckey'), session)
+    player: Player = Player.from_ckey(request.args.get('ckey'))
     if route == 'list':#Sure, fuck it, take everything.
         saves = dict()
         data = dict()
@@ -89,6 +87,6 @@ def dump_user_data():
 def verify_cloud(): #The cloud has it's own auth system. I hate it.
     if(request.args.get('api_key') is None):
         abort(401)
-    if(request.args.get('api_key') != settings.CLOUD_KEY):
+    if(request.args.get('api_key') != CLOUD_KEY):
         abort(403)
     return 0

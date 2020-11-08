@@ -1,7 +1,10 @@
-import settings
-import sqlalchemy
-from flask import Flask, request, abort, jsonify
-from orm_serializers import JSON_Goon
+from cloverfield.db import session
+from cloverfield.util.orm_serializers import JSON_Goon
+from cloverfield.extensions import sqlalchemy_ext
+from cloverfield.settings import *
+
+from flask import Flask
+
 
 #Cloverfield API System, Reverse engineered from Goonhub.
 # Made to operate with Project Clover, Beestation's modification of Goonstation.
@@ -12,9 +15,30 @@ from orm_serializers import JSON_Goon
 
 
 #Import prints.
-import participation, secret_sauce, extras, bans, cloud, stubbed_routes, round_tracking, antags, secure, notes, exptracking
+from cloverfield.blueprints import participation, secret_sauce, extras, bans, cloud, stubbed_routes, round_tracking, antags, secure, notes, exptracking
 
-app = Flask(__name__)
+
+def register_extensions(app):
+	sqlalchemy_ext.init_app(app)
+
+def create_app():
+	app = Flask(__name__)
+
+	app.url_map.strict_slashes = False
+
+	app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://{username}:{password}@{host}:{port}/{db}".format(
+		username	= MARIADB_USER,
+		password	= MARIADB_PASS,
+		host		= MARIADB_SERVER,
+		port		= MARIADB_PORT,
+		db			= MARIADB_DBNAME
+	)
+
+	register_extensions(app)
+
+	return app
+
+app = create_app()
 
 
 #Register segmented modules.
@@ -32,6 +56,3 @@ app.register_blueprint(exptracking.api_exptrak)
 
 app.json_encoder = JSON_Goon #Overwrite the default encoder to serialize bans.
 
-#Whatever crossed was doing last night.
-if __name__ == '__main__':
-    app.run()
