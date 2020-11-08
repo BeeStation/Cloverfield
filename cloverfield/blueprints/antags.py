@@ -50,21 +50,19 @@ def get_antaghistory(ckey, mode, session, calc:bool = False):
     ply: db.Player = db.Player.from_ckey(ckey)
     rec_sen: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == ("participation_"+mode)).one_or_none()
     if rec_sen is None: #New player, go ahead and create the record at least.
-        rec_sen = db.Participation_Record(
+        rec_sen = db.Participation_Record.add(
             ckey,
             ("participation_"+mode),
             0
         )
-        session.add(rec_sen)
         session.commit()
     rec_cho: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == ("selected_"+mode)).one_or_none()
     if rec_cho is None:
-        rec_cho = db.Participation_Record(
+        rec_cho = db.Participation_Record.add(
             ckey,
             ("selected_"+mode),
             0
         )
-        session.add(rec_cho)
         session.commit()
     if calc:
         return {"seen": rec_sen.value, "selected": rec_cho.value, "percentage": (rec_cho.value/rec_sen.value if (rec_cho.value and rec_sen) else 0)}

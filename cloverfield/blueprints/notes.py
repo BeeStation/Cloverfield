@@ -11,14 +11,13 @@ api_notes = Blueprint('notes', __name__)
 def handle_noteaccess():
     verify_notes()
     if request.args.get('action') == 'add':
-        note: db.PlayerNote = db.PlayerNote(
+        note: db.PlayerNote = db.PlayerNote.add(
             request.args.get('server'),
             request.args.get('server_id'),
             request.args.get('ckey'),
             request.args.get('akey'),
             request.args.get('note')
         )
-        session.add(note)
         session.commit()
         return jsonify({"OK":"Data Accepted"})
     if request.args.get('action') == 'delete':

@@ -143,6 +143,23 @@ class Ban(decbase):
         except NoResultFound:
             return None
 
+    @classmethod
+    def add(cls,ckey,ip,cid,akey,oakey,reason,timestamp,previous,chain):
+        session.begin_nested()
+        ban = cls(
+            ckey,
+            ip,
+            cid,
+            akey,
+            oakey,
+            reason,
+            timestamp,
+            previous,
+            chain
+        )
+        session.add(ban)
+        session.commit()
+        return ban
 
 class Connection(decbase):
     __tablename__ = 'connection'
@@ -186,14 +203,12 @@ class Connection(decbase):
         session.add(conlog)
 
         if record: #First connection this round, track the fact that they have at least seen it.
-            rec_sen: db.Participation_Record = session.query(Participation_Record).filter(Participation_Record.ckey == ckey).filter(Participation_Record.recordtype == "seen_basic").one_or_none()
+            rec_sen: Participation_Record = session.query(Participation_Record).filter(Participation_Record.ckey == ckey).filter(Participation_Record.recordtype == "seen_basic").one_or_none()
             if rec_sen is None: #New player, Fill in the part of their record we care about right now.
-                rec_sen = Participation_Record(
+                rec_sen = Participation_Record.add(
                     ckey,
                     "seen_basic",
                     0)
-
-                session.add(rec_sen)
 
             rec_sen.value += 1
 
@@ -217,6 +232,18 @@ class CloudSave(decbase):
         self.save_name = save_name
         self.save = save
 
+    @classmethod
+    def add(cls, ckey, save_name, save):
+        session.begin_nested()
+        sav = cls(
+            ckey,
+            save_name,
+            save
+        )
+        session.add(sav)
+        session.commit()
+        return sav
+
 class CloudData(decbase):
     __tablename__ = 'clouddata'
 
@@ -232,6 +259,17 @@ class CloudData(decbase):
         self.key = key
         self.value = value
 
+    @classmethod
+    def add(cls, ckey, key, value):
+        session.begin_nested()
+        dat = cls(
+            ckey,
+            key,
+            value
+        )
+        session.add(dat)
+        session.commit()
+        return dat
 #This struct is mercifully ephemeral and entirely managed by the API system.
 class Round_Entry(decbase):
     __tablename__ = 'rounds'
@@ -272,6 +310,19 @@ class Round_Entry(decbase):
         #I pray to god that this never breaks.
         return session.query(cls).filter(cls.server_id == tag).order_by(cls.id.desc()).first()
 
+    @classmethod
+    def add(cls, server_id, server_key, start_name, start_stamp):
+        session.begin_nested()
+        rnd = cls(
+            server_id,
+            server_key,
+            start_name,
+            start_stamp
+        )
+        session.add(rnd)
+        session.commit()
+        return rnd
+
 class Participation_Record(decbase):
     __tablename__ = 'participation'
 
@@ -286,6 +337,18 @@ class Participation_Record(decbase):
         self.ckey = ckey
         self.recordtype = record_type
         self.value = value
+
+    @classmethod
+    def add(cls, ckey, record_type, value):
+        session.begin_nested()
+        record = cls(
+            ckey,
+            record_type,
+            value
+        )
+        session.add(record)
+        session.commit()
+        return record
 
 class PlayerNote(decbase):
     __tablename__ = 'notes'
@@ -317,6 +380,18 @@ class PlayerNote(decbase):
         except NoResultFound:
             return None
 
+    @classmethod
+    def add(cls, server_key, server_id, ckey, akey, note):
+        session.begin_nested()
+        note = cls(
+            server_key,
+            server_id,
+            ckey,
+            akey
+        )
+        session.add(note)
+        return note
+
 class JobExperience(decbase):
     __tablename__ = 'jobtracking'
 
@@ -331,6 +406,17 @@ class JobExperience(decbase):
         self.ckey = ckey
         self.key = key
         self.val = val
+
+    @classmethod
+    def add(cls, ckey, key, val):
+        session.begin_nested()
+        exp = cls(
+            ckey,
+            key,
+            val
+        )
+        session.add(exp)
+        return exp
 
     #TODO If this ever gets a public facing version, add a method to grab all of a certain key's entries for ranking.
 
@@ -353,3 +439,16 @@ class JobBan(decbase):
         self.rank = rank
         self.akey = akey
         self.server_id = server_id
+
+    @classmethod
+    def add(cls, ckey, rank, akey, server_id):
+        session.begin_nested()
+        ban = cls(
+            ckey,
+            rank,
+            akey,
+            server_id
+        )
+        session.add(ban)
+        session.commit()
+        return ban

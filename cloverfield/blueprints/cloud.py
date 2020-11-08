@@ -42,12 +42,11 @@ def cloud_hell():
         session.commit()
         return jsonify({"saves":saves,"cdata":data})
     if route == 'put': #Okay shit we actually have to store things.
-        sav: CloudSave = CloudSave(
+        sav: CloudSave = CloudSave.add(
             player.ckey,
             request.args.get('name'),
             request.args.get('data')
         )
-        session.add(sav)
         session.commit()
         return jsonify({"status":"OK"})
     if route == 'delete': #Find the cloud save by name and delete it.
@@ -64,12 +63,11 @@ def cloud_hell():
             dat.value = urllib.parse.unquote(request.args.get('value'))
             session.commit()
             return jsonify({"status":"OK"})
-        dat = CloudData(
+        dat = CloudData.add(
             player.ckey,
             request.args.get('key'),
             urllib.parse.unquote(request.args.get('value'))
         )
-        session.add(dat)
         session.commit()
         return jsonify({"status":"OK"})
     if route == 'get': #Okay why does it fucking call this they got them the first time wtf

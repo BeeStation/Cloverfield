@@ -52,12 +52,11 @@ def record_participation(ckey, mode):
     mode_str: str = "participation_"+mode
     mode_seen: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == mode_str).one_or_none()
     if mode_seen is None:
-        mode_seen = db.Participation_Record(
+        mode_seen = db.Participation_Record.add(
             ckey,
             mode_str,
             0
         )
-        session.add(mode_seen)
     mode_seen.value += 1
     session.commit()
     return 0
