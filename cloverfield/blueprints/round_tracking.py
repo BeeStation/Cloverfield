@@ -2,9 +2,8 @@ import cloverfield.db
 
 from cloverfield.settings import *
 from cloverfield.util.helpers import check_allowed, ip_getstr
-from cloverfield.db import Connection, Round_Entry, Session, Player, Participation_Record
+from cloverfield.db import Connection, Round_Entry, session, Player, Participation_Record
 
-import sqlalchemy.orm
 from flask import Blueprint, jsonify, abort, request
 import datetime
 
@@ -17,7 +16,6 @@ latest_known_rounds: dict = dict() #{server_key:round_id}, {main:1}, used to inv
 def handle_roundstate():
     verify_parser()
     #Switch by round_status argument
-    session: sqlalchemy.orm.Session = Session()
     if(request.args.get('round_status') == 'start'):
         old_rnd: Round_Entry = Round_Entry.get_latest(session, request.args.get('round_server'))
         if old_rnd is not None and old_rnd.reason is None:  #The round was restarted without providing a reason.
@@ -59,8 +57,7 @@ def get_player_info(): #see formats/playerinfo_get.json
     #The thing is, tracking one of these values over the other is a lot more difficult than you'd think.
     #So for now, I'm going to tie both of them to the same value.
     #Actually, it's surprisingly fine. I just need to be careful about things.
-    session: sqlalchemy.orm.Session = Session()
-    ply: Player = Player.from_ckey(request.args.get('ckey'), session)
+    ply: Player = Player.from_ckey(request.args.get('ckey'))
     #Turns out this route fires before bans are checked.
     if ply is None:
         return jsonify({'participated': 0, 'seen': 0})

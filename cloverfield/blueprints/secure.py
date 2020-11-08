@@ -1,7 +1,7 @@
 import cloverfield.db
 
 from cloverfield.settings import *
-from cloverfield.db import Session
+from cloverfield.db import session
 from cloverfield.util.helpers import ip_getint
 from cloverfield.blueprints.round_tracking import latest_known_rounds
 
@@ -9,6 +9,7 @@ from flask import request, Blueprint, abort, jsonify
 import jwt
 import datetime
 
+import sqlalchemy
 import sqlalchemy.orm
 
 import re
@@ -101,7 +102,6 @@ def secure_get_banpanel():
 #Please join me in hell as I copypaste all this shit.
 
 def bans_sort_all():
-    session:sqlalchemy.orm.Session = Session()
     searchval:str = str(request.args.get('search[all]'))
     if searchval == '' or None:
         searchval = '%'
@@ -124,7 +124,6 @@ def bans_sort_all():
     return ret
 
 def bans_sort_ckey():
-    session:sqlalchemy.orm.Session = Session()
     searchval:str = str(request.args.get('search[ckey]'))
     if searchval == '' or None:
         searchval = '%'
@@ -142,7 +141,6 @@ def bans_sort_ckey():
     return ret
 
 def bans_sort_akey():
-    session:sqlalchemy.orm.Session = Session()
     searchval:str = str(request.args.get('search[akey]'))
     if searchval == '' or None:
         searchval = '%'

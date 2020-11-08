@@ -1,10 +1,9 @@
 import cloverfield.db
 
-from cloverfield.db import Session, Player
+from cloverfield.db import session, Player
 from cloverfield.util.helpers import check_allowed, ip_getstr
 from cloverfield.statics.database import *
 
-import sqlalchemy
 import collections.abc
 from flask import request, Blueprint, jsonify
 
@@ -17,13 +16,12 @@ def get_player_ip_history():
     """
     #This was actually extremely nice and clean.
     check_allowed(True)
-    session: sqlalchemy.orm.Session = Session()
     #If a player gets passed to this and doesn't exist, just crash.
-    player: Player = db.Player.from_ckey(request.args.get('ckey'), session)
+    player: Player = db.Player.from_ckey(request.args.get('ckey'))
 
     #TODO this code can probably be made a helper or deduped in some way
     #to be reused for the GetCIDs call.
-    ip_list = player.get_historic_inetaddr(session, RET_STR)
+    ip_list = player.get_historic_inetaddr(RET_STR)
     ctr = collections.Counter(ip_list)
     frequency_list = list()
     for entry in list(ctr):
@@ -36,13 +34,12 @@ def get_player_ip_history():
 def get_player_cid_history(): #God put me into this world to do terrible things. Like copypasting entire functions because I'm lazy.
     #This was actually extremely nice and clean.
     check_allowed(True)
-    session: sqlalchemy.orm.Session = Session()
     #If a player gets passed to this and doesn't exist, just crash.
-    player: Player = db.Player.from_ckey(request.args.get('ckey'), session)
+    player: Player = db.Player.from_ckey(request.args.get('ckey'))
 
     #TODO #15 this code can probably be made a helper or deduped in some way
     #to be reused for the GetCIDs call.
-    cid_list = player.get_historic_cid(session)
+    cid_list = player.get_historic_cid()
     ctr = collections.Counter(cid_list)
     frequency_list = list()
     for entry in list(ctr):

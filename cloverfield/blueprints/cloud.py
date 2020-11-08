@@ -1,10 +1,8 @@
 import cloverfield.db
 
 from cloverfield.settings import *
-from cloverfield.db import Session, Player, CloudSave, CloudData
+from cloverfield.db import session, Player, CloudSave, CloudData
 
-import sqlalchemy
-import sqlalchemy.orm
 import urllib.parse
 from flask import Blueprint, request, abort, jsonify
 
@@ -30,8 +28,7 @@ api_cloudhub = Blueprint('cloud', __name__)
 def cloud_hell():
     verify_cloud()
     route:str = list(request.args)[0]
-    session: sqlalchemy.orm.Session = Session()
-    player: Player = Player.from_ckey(request.args.get('ckey'), session)
+    player: Player = Player.from_ckey(request.args.get('ckey'))
     if route == 'list':#Sure, fuck it, take everything.
         saves = dict()
         data = dict()

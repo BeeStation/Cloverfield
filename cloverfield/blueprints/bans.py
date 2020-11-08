@@ -1,13 +1,11 @@
 import cloverfield.db
 
-from cloverfield.db import Session, Player, Ban, sessionmaker
-from cloverfield.util.helpers import check_allowed, construct_player, log_connection, ip_getint, ip_getstr, close_and_abort
+from cloverfield.db import session, Player, Ban
+from cloverfield.util.helpers import check_allowed, ip_getint, ip_getstr
 from cloverfield.statics.database import *
 from cloverfield.util.topic import hub_callback
 
 import datetime
-import sqlalchemy
-import sqlalchemy.orm
 import asyncio
 from flask import Blueprint, request, jsonify, abort
 
@@ -19,14 +17,13 @@ def check_ban():
     check_allowed(True)
     #These are requested in a super weird format, *And are also our only form of connection log.*
     # ckey/compID/ip/record
-    session: sqlalchemy.orm.Session = Session()
-    player: Player = db.Player.from_ckey(request.args.get('ckey'), session)
+    player: Player = db.Player.from_ckey(request.args.get('ckey'))
     if player is None: #Player doesn't exist, construct them before continuing.
-        player = construct_player(session)
+        player = db.Player.add(request.args.get('ckey'), ip_getint(request.args.get('ip')), request.args.get('compID'))
         session.add(player)
 
     #Log Connection
-    log_connection(session)
+    db.Connection.add(request.args.get('ckey'), ip_getint(request.args.get('ip')), request.args.get('compID'), request.args.get('record'), db.Round_Entry.get_latest(session, request.args.get('data_id')).id)
 
     #Generate Return
     if player.flags & FLAG_EXEMPT:#Exempt. We're done here.
@@ -40,10 +37,10 @@ def check_ban():
     all_matching_bans.extend(list(session.query(db.Ban).filter(db.Ban.ckey == player.ckey).filter(db.Ban.removed == False)))
 
     #Retreive bans that match historic IP addresses.
-    all_matching_bans.extend(list(session.query(db.Ban).filter(db.Ban.ip.in_(player.get_historic_inetaddr(session))).filter(db.Ban.removed == False)))
+    all_matching_bans.extend(list(session.query(db.Ban).filter(db.Ban.ip.in_(player.get_historic_inetaddr())).filter(db.Ban.removed == False)))
 
     #Likewise for CID
-    all_matching_bans.extend(list(session.query(db.Ban).filter(db.Ban.cid.in_(player.get_historic_cid(session))).filter(db.Ban.removed == False)))
+    all_matching_bans.extend(list(session.query(db.Ban).filter(db.Ban.cid.in_(player.get_historic_cid())).filter(db.Ban.removed == False)))
 
     #Deduplicate.
     all_matching_bans = list(dict.fromkeys(all_matching_bans))
@@ -70,7 +67,6 @@ def check_ban():
 @api_ban.route('/bans/add/')#Fucking CALLS BACK W H Y
 def issue_ban(): #OH GOD TIMESTAMPS ARE BYOND ERA
     check_allowed(True)
-    session: sqlalchemy.orm.Session = Session()
     new_ban = Ban(
         ckey =      request.args.get('ckey'),
         ip =        ip_getint(request.args.get('ip')) if request.args.get('ip') != 'N/A' else -1,
@@ -102,7 +98,6 @@ def issue_ban(): #OH GOD TIMESTAMPS ARE BYOND ERA
 @api_ban.route('/bans/delete/')
 def remove_ban():
     check_allowed(True)
-    session: sqlalchemy.orm.Session = Session()
     #Time to do some integrity checking.
     #All we *technically* need out of this request is an ID,
     #but to preserve security and make things a bit harder
@@ -116,7 +111,7 @@ def remove_ban():
     if  target_ban.ckey != request.args.get('ckey') or \
         target_ban.cid != request.args.get('compID') or \
         target_ban.ip != ip_getint(request.args.get('ip')):
-        close_and_abort(session, 400)
+        abort(400)
     #Not finished tonight. TODO tomorrow.
     #Ban is correctly selected. Mark it deleted.
     target_ban.removed = True
@@ -126,7 +121,6 @@ def remove_ban():
 @api_ban.route('/bans/edit/')
 def edit_ban():
     check_allowed(True)
-    session: sqlalchemy.orm.Session = Session()
     target_ban: db.Ban = db.Ban.from_id(session, request.args.get('id'))
     if target_ban is not None:
         target_ban.ckey =      request.args.get('ckey')
@@ -161,10 +155,9 @@ def edit_ban():
 @api_ban.route('/jobbans/get/player/')
 def get_plyjobban():
     check_allowed(True)
-    session: sqlalchemy.orm.Session = Session()
     if request.args.get('ckey') is None:
         abort(400)
-    ply: Player = Player.from_ckey(request.args.get('ckey'), session)
+    ply: Player = Player.from_ckey(request.args.get('ckey'))
     if ply is None: #Can't ban the nonexistant.
         return jsonify({request.args.get('ckey'):[]})
     banlist: list = ply.jobbans.filter(db.JobBan.removed == 0).all()
@@ -178,7 +171,6 @@ def get_plyjobban():
 @api_ban.route('/jobbans/get/all/')
 def get_alljobban():
     check_allowed(True)
-    session: sqlalchemy.orm.Session = Session()
     allbans:list = list(session.query(db.JobBan).filter(db.JobBan.removed == 0).all())
     ret:dict = dict()
     x: db.JobBan
@@ -193,10 +185,9 @@ def get_alljobban():
 @api_ban.route('/jobbans/del/')
 def rem_jobban():
     check_allowed(True)
-    session: sqlalchemy.orm.Session = Session()
     if request.args.get('ckey') is None or request.args.get('rank') is None:
         abort(400)
-    ply: Player = Player.from_ckey(request.args.get('ckey'), session)
+    ply: Player = Player.from_ckey(request.args.get('ckey'))
     ban: db.JobBan = ply.jobbans.filter(db.JobBan.removed == 0).filter(db.JobBan.rank == request.args.get('rank')).one_or_none()
     if ban is None:
         jsonify({"Error":"Ban does not exist or is already removed."})
@@ -208,7 +199,6 @@ def rem_jobban():
 @api_ban.route('/jobbans/add/')
 def add_jobban():
     check_allowed(True)
-    session: sqlalchemy.orm.Session = Session()
     if request.args.get('ckey') is None or request.args.get('rank') is None or request.args.get('akey') is None:
         abort(400)
     ban = db.JobBan(

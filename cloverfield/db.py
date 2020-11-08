@@ -1,12 +1,11 @@
 from cloverfield.settings import *
 from cloverfield.util.helpers import ip_getstr
 from cloverfield.statics.database import * # pylint: disable=unused-wildcard-import
+from cloverfield.extensions import sqlalchemy_ext
 
-import sqlalchemy
 from sqlalchemy import * # pylint: disable=unused-wildcard-import
 
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker, Session
+from sqlalchemy.orm import relationship
 from sqlalchemy.orm.exc import NoResultFound
 
 from urllib.parse import quote
@@ -14,14 +13,9 @@ from urllib.parse import quote
 import datetime
 import collections
 
-Session = sessionmaker()
-Session.configure(bind = create_engine((
-    'mysql://'+
-    quote(MARIADB_USER)+':'+quote(MARIADB_PASS)+
-    '@'+quote(MARIADB_SERVER)+':'+quote(str(MARIADB_PORT))+'/'+quote(MARIADB_DBNAME)
-    )))
 
-decbase = declarative_base()
+session = sqlalchemy_ext.session
+decbase = sqlalchemy_ext.Model
 
 #Thank tapdancing christ that these are the only structs the central API cares about.
 
@@ -54,13 +48,28 @@ class Player(decbase):
         self.flags = 0
 
     @classmethod
-    def from_ckey(cls, ckey, session: sqlalchemy.orm.Session):
+    def add(cls, ckey, ip, cid):
+        """
+        Construct a new entry to `players`.
+        """
+        session.begin_nested()
+        player = cls(
+            ckey,
+            ip,
+            cid
+        )
+        session.add(player)
+        session.commit()
+        return player
+
+    @classmethod
+    def from_ckey(cls, ckey):
         try:
             return session.query(cls).filter(cls.ckey == ckey).one()
         except NoResultFound:
             return None
 
-    def get_historic_inetaddr(self, session: sqlalchemy.orm.Session, return_type = RET_INT):
+    def get_historic_inetaddr(self, return_type = RET_INT):
         """
         Returns historical IP data about the player.
         See statics.database for return types
@@ -79,7 +88,7 @@ class Player(decbase):
                 ip_list.append(y.ip)
         return ip_list
 
-    def get_historic_cid(self, session: sqlalchemy.orm.Session, return_type = RET_INT):
+    def get_historic_cid(self, return_type = RET_INT):
         """
         Returns historical IP data about the player.
         """
@@ -158,6 +167,39 @@ class Connection(decbase):
         self.initial = initial
         self.round = round
 
+    @classmethod
+    def add(cls, ckey, ip, cid, record, round_id):
+        """
+        Log the connection to the `connection` table. The backbone of ban checking.
+
+        Also handles round seen tracking.
+        """
+
+        session.begin_nested()
+        conlog = cls(
+            ckey,
+            ip,
+            cid,
+            record,
+            round_id
+        )
+        session.add(conlog)
+
+        if record: #First connection this round, track the fact that they have at least seen it.
+            rec_sen: db.Participation_Record = session.query(Participation_Record).filter(Participation_Record.ckey == ckey).filter(Participation_Record.recordtype == "seen_basic").one_or_none()
+            if rec_sen is None: #New player, Fill in the part of their record we care about right now.
+                rec_sen = Participation_Record(
+                    ckey,
+                    "seen_basic",
+                    0)
+
+                session.add(rec_sen)
+
+            rec_sen.value += 1
+
+        session.commit()
+
+        return conlog
 
 
 class CloudSave(decbase):
