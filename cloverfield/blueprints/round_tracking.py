@@ -27,16 +27,11 @@ def handle_roundstate():
             request.args.get('round_name'),
             datetime.datetime.utcnow()
         )
-        session.commit()
         return jsonify("OK")
 
     if(request.args.get('round_status') == 'end'):
         rnd: Round_Entry = Round_Entry.get_latest(session, request.args.get('round_server'))
-        rnd.end_name = request.args.get('round_name')
-        rnd.mode = request.args.get('mode')
-        rnd.reason = request.args.get('end_reason')
-        rnd.end_stamp = datetime.datetime.utcnow()
-        session.commit()
+        rnd.mark_end(request.args.get('round_name'), request.args.get('mode'), request.args.get('end_reason'))
         return jsonify("OK")
     session.close()
     return abort(400)
@@ -74,7 +69,6 @@ def get_player_info(): #see formats/playerinfo_get.json
             "seen_basic",
             0
         )
-    session.commit()
     return jsonify({'participated': rec_par.value, 'seen': rec_sen.value, 'last_ip': ip_getstr(ply.last_ip), 'last_compID': str(ply.last_cid)})
 
 def verify_parser():

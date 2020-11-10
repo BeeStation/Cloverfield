@@ -18,14 +18,12 @@ def handle_noteaccess():
             request.args.get('akey'),
             request.args.get('note')
         )
-        session.commit()
         return jsonify({"OK":"Data Accepted"})
     if request.args.get('action') == 'delete':
         note: db.PlayerNote = db.PlayerNote.from_id(session, request.args.get('id'))
         if note is None:
             abort(400)
-        note.deleted = True
-        session.commit()
+        note.remove()
         return jsonify({"OK":"Note Marked Deleted."})
     if request.args.get('action') == 'get':
         #Okay, the return format for this is fucking stupid.

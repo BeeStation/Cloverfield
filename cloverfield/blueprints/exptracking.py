@@ -34,5 +34,4 @@ def set_jobexp():
         )
     else:
         record.val = request.args.get('val')
-    session.commit()
     return jsonify({"OK": "Experience Set."})

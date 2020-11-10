@@ -24,7 +24,6 @@ def record_individual_participation():
     #...If it is I'm probably going to drink myself to death at the end of this.
     #Thankfully it's a void function so I can safely just neuter it for now.
     record_participation(request.args.get('ckey'),request.args.get('round_mode'))
-    session.commit()
     return jsonify('OK')
 
 @api_participation.route('/participation/record-multiple/')#VOID???
@@ -40,7 +39,6 @@ def record_multi_participation():
         if record_participation(request.args.get('ckeys['+str(i)+']'), request.args.get('round_mode')):
             break
         i += 1
-    session.commit()
     return jsonify('OK')
 
 def record_participation(ckey, mode):
@@ -48,7 +46,7 @@ def record_participation(ckey, mode):
         return 1
     ply: db.Player = db.Player.from_ckey(ckey)
     basic_part: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == "participation_basic").one()
-    basic_part.value += 1
+    basic_part.record()
     mode_str: str = "participation_"+mode
     mode_seen: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == mode_str).one_or_none()
     if mode_seen is None:
@@ -57,6 +55,5 @@ def record_participation(ckey, mode):
             mode_str,
             0
         )
-    mode_seen.value += 1
-    session.commit()
+    mode_seen.record()
     return 0

@@ -60,15 +60,13 @@ def cloud_hell():
     if route == 'dataput': #Abitrary, key-based write and update-only data storage. This one might get unpleasant.
         dat: CloudData = session.query(CloudData).filter(CloudData.ckey == player.ckey).filter(CloudData.key == request.args.get('key')).one_or_none()
         if dat is not None:
-            dat.value = urllib.parse.unquote(request.args.get('value'))
-            session.commit()
+            dat.update(urllib.parse.unquote(request.args.get('value')))
             return jsonify({"status":"OK"})
         dat = CloudData.add(
             player.ckey,
             request.args.get('key'),
             urllib.parse.unquote(request.args.get('value'))
         )
-        session.commit()
         return jsonify({"status":"OK"})
     if route == 'get': #Okay why does it fucking call this they got them the first time wtf
         sav: CloudSave = session.query(CloudSave).filter(CloudSave.ckey == player.ckey).filter(CloudSave.save_name == request.args.get('name')).one_or_none()

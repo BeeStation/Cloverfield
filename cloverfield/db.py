@@ -52,7 +52,6 @@ class Player(decbase):
         """
         Construct a new entry to `players`.
         """
-        session.begin_nested()
         player = cls(
             ckey,
             ip,
@@ -112,7 +111,6 @@ class Ban(decbase):
     akey =      Column('akey',          String(32))
     oakey =     Column('oakey',         String(32))
     reason =    Column('reason',        String())
-#   mins =      Column('mins',          BigInteger())#WHAT, YOU THINK THE OLDEST SS13 SERVER WOULDN'T HAVE SOME SORT OF MEGAJANK LIKE THIS?!
     timestamp = Column('timestamp',     BigInteger())#YOU'DE THINK WE'D USE A TIMESTAMP FOR THIS?! HAHAHAHAH NO THIS IS ACTUALLY THE TIMESTAMP YOU GET UNBANNED. IT'S STORED AS A BYOND ERA COUNT OF MINUTES.
     #IT'S TO THE POINT WHERE WE CAN'T EVEN ISSUE MINUTE-ACCURATE BANS ANYMORE, WE'RE USUALLY OFF BY ANYWHERE AROUND ±3 MINUTES. THIS ENTIRE SYSTEM IS A J O K E
     previous =  Column('previous',      Integer())
@@ -145,7 +143,6 @@ class Ban(decbase):
 
     @classmethod
     def add(cls,ckey,ip,cid,akey,oakey,reason,timestamp,previous,chain):
-        session.begin_nested()
         ban = cls(
             ckey,
             ip,
@@ -160,6 +157,14 @@ class Ban(decbase):
         session.add(ban)
         session.commit()
         return ban
+
+    def remove():
+        """
+        Remove(Delete) a note, retains it's entry in the database.
+        sets removed to 1
+        """
+        removed = 1
+        session.commit()
 
 class Connection(decbase):
     __tablename__ = 'connection'
@@ -192,7 +197,6 @@ class Connection(decbase):
         Also handles round seen tracking.
         """
 
-        session.begin_nested()
         conlog = cls(
             ckey,
             ip,
@@ -210,10 +214,7 @@ class Connection(decbase):
                     "seen_basic",
                     0)
 
-            rec_sen.value += 1
-
-        session.commit()
-
+            rec_sen.record()
         return conlog
 
 
@@ -234,7 +235,6 @@ class CloudSave(decbase):
 
     @classmethod
     def add(cls, ckey, save_name, save):
-        session.begin_nested()
         sav = cls(
             ckey,
             save_name,
@@ -261,7 +261,6 @@ class CloudData(decbase):
 
     @classmethod
     def add(cls, ckey, key, value):
-        session.begin_nested()
         dat = cls(
             ckey,
             key,
@@ -270,6 +269,15 @@ class CloudData(decbase):
         session.add(dat)
         session.commit()
         return dat
+
+    def update(self, val):
+        """
+        Update the current value of this data unit.
+        Must be provided in usable form.
+        """
+        value = val
+        session.commit()
+
 #This struct is mercifully ephemeral and entirely managed by the API system.
 class Round_Entry(decbase):
     __tablename__ = 'rounds'
@@ -312,7 +320,6 @@ class Round_Entry(decbase):
 
     @classmethod
     def add(cls, server_id, server_key, start_name, start_stamp):
-        session.begin_nested()
         rnd = cls(
             server_id,
             server_key,
@@ -322,6 +329,18 @@ class Round_Entry(decbase):
         session.add(rnd)
         session.commit()
         return rnd
+
+    def mark_end(self, gname, gmode, greason):
+        reason = greason
+        if greason == 3:
+            session.commit()
+            return
+        end_name = gname
+        mode = gmode
+        end_stamp = datetime.datetime.utcnow()
+        session.commit()
+        return
+
 
 class Participation_Record(decbase):
     __tablename__ = 'participation'
@@ -340,7 +359,6 @@ class Participation_Record(decbase):
 
     @classmethod
     def add(cls, ckey, record_type, value):
-        session.begin_nested()
         record = cls(
             ckey,
             record_type,
@@ -349,6 +367,14 @@ class Participation_Record(decbase):
         session.add(record)
         session.commit()
         return record
+
+    def record():
+        """
+        Record a participation event
+        (Increment by one.)
+        """
+        value += 1
+        session.commit()
 
 class PlayerNote(decbase):
     __tablename__ = 'notes'
@@ -382,7 +408,6 @@ class PlayerNote(decbase):
 
     @classmethod
     def add(cls, server_key, server_id, ckey, akey, note):
-        session.begin_nested()
         note = cls(
             server_key,
             server_id,
@@ -390,7 +415,16 @@ class PlayerNote(decbase):
             akey
         )
         session.add(note)
+        session.commit()
         return note
+
+    def remove():
+        """
+        Remove(Delete) a note, retains it's entry in the database.
+        sets deleted to 1
+        """
+        deleted = 1
+        session.commit()
 
 class JobExperience(decbase):
     __tablename__ = 'jobtracking'
@@ -409,13 +443,13 @@ class JobExperience(decbase):
 
     @classmethod
     def add(cls, ckey, key, val):
-        session.begin_nested()
         exp = cls(
             ckey,
             key,
             val
         )
         session.add(exp)
+        session.commit()
         return exp
 
     #TODO If this ever gets a public facing version, add a method to grab all of a certain key's entries for ranking.
@@ -442,7 +476,6 @@ class JobBan(decbase):
 
     @classmethod
     def add(cls, ckey, rank, akey, server_id):
-        session.begin_nested()
         ban = cls(
             ckey,
             rank,
@@ -452,3 +485,12 @@ class JobBan(decbase):
         session.add(ban)
         session.commit()
         return ban
+    def remove():
+        """
+        Remove(Delete) a job ban, retains it's entry in the database.
+        sets removed to 1.
+        sets deletion time.
+        """
+        removed = 1
+        remove_time = datetime.datetime.utcnow()
+        session.commit()

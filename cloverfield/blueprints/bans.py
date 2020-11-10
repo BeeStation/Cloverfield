@@ -26,7 +26,6 @@ def check_ban():
 
     #Generate Return
     if player.flags & FLAG_EXEMPT:#Exempt. We're done here.
-        session.commit()
         return jsonify({'exempt': True}) #NOTE: This stuff looks legacy. Is it still meant to be functional? -F
 
     #Interrogate the ban table for the latest.
@@ -77,7 +76,6 @@ def issue_ban(): #OH GOD TIMESTAMPS ARE BYOND ERA
         previous =  request.args.get('previous'),
         chain =     request.args.get('chain')
         )
-    session.flush() #Push to database.
     asyncio.run(hub_callback('addBan',{"ban":{
         "id":new_ban.id,
         "ckey":new_ban.ckey,
@@ -90,7 +88,6 @@ def issue_ban(): #OH GOD TIMESTAMPS ARE BYOND ERA
         "previous":new_ban.previous,
         "chain":new_ban.chain
     }}, secure=True))
-    session.commit()
     return jsonify("OK")
 
 @api_ban.route('/bans/delete/')
@@ -112,8 +109,7 @@ def remove_ban():
         abort(400)
     #Not finished tonight. TODO tomorrow.
     #Ban is correctly selected. Mark it deleted.
-    target_ban.removed = True
-    session.commit()
+    target_ban.remove()
     return
 
 @api_ban.route('/bans/edit/')
@@ -189,9 +185,7 @@ def rem_jobban():
     ban: db.JobBan = ply.jobbans.filter(db.JobBan.removed == 0).filter(db.JobBan.rank == request.args.get('rank')).one_or_none()
     if ban is None:
         jsonify({"Error":"Ban does not exist or is already removed."})
-    ban.remove_time = datetime.datetime.utcnow()
-    ban.removed = True
-    session.commit()
+    ban.remove()
     return jsonify({"OK":"Ban Removed."})
 
 @api_ban.route('/jobbans/add/')
@@ -205,5 +199,4 @@ def add_jobban():
         request.args.get('akey'),
         request.args.get('applicable_server') if request.args.get('applicable_server') != "" else None
     )
-    session.commit()
     return jsonify({"OK":"Ban Issued."})
