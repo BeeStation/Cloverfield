@@ -21,23 +21,17 @@ def handle_roundstate():
         if old_rnd is not None and old_rnd.reason is None:  #The round was restarted without providing a reason.
             old_rnd.reason = 3      #Fill in reason column to prevent repeat and to mark rounds as errored.
         #We need to create the round datum.
-        rnd = Round_Entry(
+        rnd = Round_Entry.add(
             request.args.get('round_server'),
             request.args.get('round_server_number'),
             request.args.get('round_name'),
             datetime.datetime.utcnow()
         )
-        session.add(rnd)
-        session.commit()
-        latest_known_rounds.update({request.args.get('round_server'):rnd.id}) #Cache the now updated ID variable for security usage.
         return jsonify("OK")
+
     if(request.args.get('round_status') == 'end'):
         rnd: Round_Entry = Round_Entry.get_latest(session, request.args.get('round_server'))
-        rnd.end_name = request.args.get('round_name')
-        rnd.mode = request.args.get('mode')
-        rnd.reason = request.args.get('end_reason')
-        rnd.end_stamp = datetime.datetime.utcnow()
-        session.commit()
+        rnd.mark_end(request.args.get('round_name'), request.args.get('mode'), request.args.get('end_reason'))
         return jsonify("OK")
     session.close()
     return abort(400)
@@ -63,21 +57,18 @@ def get_player_info(): #see formats/playerinfo_get.json
         return jsonify({'participated': 0, 'seen': 0})
     rec_par: Participation_Record = ply.participation.filter(Participation_Record.recordtype == "participation_basic").one_or_none()
     if rec_par is None: #New player, Fill in their record.
-        rec_par = Participation_Record(
+        rec_par = Participation_Record.add(
             request.args.get('ckey'),
             "participation_basic",
             0
         )
-        session.add(rec_par)
     rec_sen: Participation_Record = ply.participation.filter(Participation_Record.recordtype == "seen_basic").one_or_none()
     if rec_sen is None: #New player, Fill in their record.
-        rec_sen = Participation_Record(
+        rec_sen = Participation_Record.add(
             request.args.get('ckey'),
             "seen_basic",
             0
         )
-        session.add(rec_sen)
-    session.commit()
     return jsonify({'participated': rec_par.value, 'seen': rec_sen.value, 'last_ip': ip_getstr(ply.last_ip), 'last_compID': str(ply.last_cid)})
 
 def verify_parser():

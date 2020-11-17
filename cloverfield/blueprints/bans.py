@@ -20,14 +20,12 @@ def check_ban():
     player: Player = db.Player.from_ckey(request.args.get('ckey'))
     if player is None: #Player doesn't exist, construct them before continuing.
         player = db.Player.add(request.args.get('ckey'), ip_getint(request.args.get('ip')), request.args.get('compID'))
-        session.add(player)
 
     #Log Connection
     db.Connection.add(request.args.get('ckey'), ip_getint(request.args.get('ip')), request.args.get('compID'), request.args.get('record'), db.Round_Entry.get_latest(session, request.args.get('data_id')).id)
 
     #Generate Return
     if player.flags & FLAG_EXEMPT:#Exempt. We're done here.
-        session.commit()
         return jsonify({'exempt': True}) #NOTE: This stuff looks legacy. Is it still meant to be functional? -F
 
     #Interrogate the ban table for the latest.
@@ -67,7 +65,7 @@ def check_ban():
 @api_ban.route('/bans/add/')#Fucking CALLS BACK W H Y
 def issue_ban(): #OH GOD TIMESTAMPS ARE BYOND ERA
     check_allowed(True)
-    new_ban = Ban(
+    new_ban = Ban.add(
         ckey =      request.args.get('ckey'),
         ip =        ip_getint(request.args.get('ip')) if request.args.get('ip') != 'N/A' else -1,
         cid =       request.args.get('compID') if request.args.get('compID') != 'N/A' else -1,
@@ -78,8 +76,6 @@ def issue_ban(): #OH GOD TIMESTAMPS ARE BYOND ERA
         previous =  request.args.get('previous'),
         chain =     request.args.get('chain')
         )
-    session.add(new_ban)
-    session.flush() #Push to database.
     asyncio.run(hub_callback('addBan',{"ban":{
         "id":new_ban.id,
         "ckey":new_ban.ckey,
@@ -92,7 +88,6 @@ def issue_ban(): #OH GOD TIMESTAMPS ARE BYOND ERA
         "previous":new_ban.previous,
         "chain":new_ban.chain
     }}, secure=True))
-    session.commit()
     return jsonify("OK")
 
 @api_ban.route('/bans/delete/')
@@ -114,8 +109,7 @@ def remove_ban():
         abort(400)
     #Not finished tonight. TODO tomorrow.
     #Ban is correctly selected. Mark it deleted.
-    target_ban.removed = True
-    session.commit()
+    target_ban.remove()
     return
 
 @api_ban.route('/bans/edit/')
@@ -191,9 +185,7 @@ def rem_jobban():
     ban: db.JobBan = ply.jobbans.filter(db.JobBan.removed == 0).filter(db.JobBan.rank == request.args.get('rank')).one_or_none()
     if ban is None:
         jsonify({"Error":"Ban does not exist or is already removed."})
-    ban.remove_time = datetime.datetime.utcnow()
-    ban.removed = True
-    session.commit()
+    ban.remove()
     return jsonify({"OK":"Ban Removed."})
 
 @api_ban.route('/jobbans/add/')
@@ -201,12 +193,10 @@ def add_jobban():
     check_allowed(True)
     if request.args.get('ckey') is None or request.args.get('rank') is None or request.args.get('akey') is None:
         abort(400)
-    ban = db.JobBan(
+    ban = db.JobBan.add(
         request.args.get('ckey'),
         request.args.get('rank'),
         request.args.get('akey'),
         request.args.get('applicable_server') if request.args.get('applicable_server') != "" else None
     )
-    session.add(ban)
-    session.commit()
     return jsonify({"OK":"Ban Issued."})

@@ -34,6 +34,8 @@ def create_app():
 		db			= MARIADB_DBNAME
 	)
 
+	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False #We don't use this anyways, afaik
+
 	register_extensions(app)
 
 	return app

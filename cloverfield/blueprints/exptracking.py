@@ -27,13 +27,11 @@ def set_jobexp():
     ply: db.Player = db.Player.from_ckey(request.args.get("ckey"))
     record: db.JobExperience = ply.jobexp.filter(db.JobExperience.key == request.args.get("type")).one_or_none()
     if(record is None):
-        record = db.JobExperience(
+        record = db.JobExperience.add(
             request.args.get('ckey'),
             request.args.get('type'),
             request.args.get('val')
         )
-        session.add(record)
     else:
         record.val = request.args.get('val')
-    session.commit()
     return jsonify({"OK": "Experience Set."})

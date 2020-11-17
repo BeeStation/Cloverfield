@@ -55,12 +55,11 @@ def usec_issuejwt():
         #Qualified Claims
         'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=2),
         'nbf': datetime.datetime.utcnow(),
-        'iss': 'Cloverfield',
+        'iss': 'Cloverfield_FOR_CVR-'+str(request.args.get('server_id')).upper,
         'aud': 'CF_BANLIST',
         'iat': datetime.datetime.utcnow(),
 
         #Private Use Claims
-        'rid': latest_known_rounds[request.args.get('servertag')],  #Lock tokens to individual rounds.
         'adm': request.args.get('administrator'),                   #Auditing.
         'arv': API_REV
     }
@@ -228,8 +227,8 @@ def verify_secure():
     try:
         x:dict=jwt.decode(bytes(request.args.get('token') if request.args.get('token') is not None else request.args.get('auth'), 'utf8'), US_SECRET, algorithms='HS512', audience='CF_BANLIST')
         #FIXME CHECK DISABLED FOR TESTING, DO NOT RUN IN PROD.
-        if int(x['rid']) != latest_known_rounds[request.args.get('servertag') if request.args.get('servertag') is not None else request.args.get('data_id')]: #Token expired by round change.
-            raise Exception("Token expired by round ID mismatch.")
+        # if int(x['rid']) != latest_known_rounds[request.args.get('servertag') if request.args.get('servertag') is not None else request.args.get('data_id')]: #Token expired by round change.
+        #     raise Exception("Token expired by round ID mismatch.")
         if int(x['arv']) != API_REV:
             raise Exception("!!!TOKEN CLAIMS VALID BUT API VERSION IS WRONG!!!") #This should never happen.
     except: #trap every single error and forbid.

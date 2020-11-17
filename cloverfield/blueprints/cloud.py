@@ -39,16 +39,13 @@ def cloud_hell():
         x: db.CloudData
         for x in player.data:
             data.update({x.key:x.value})
-        session.commit()
         return jsonify({"saves":saves,"cdata":data})
     if route == 'put': #Okay shit we actually have to store things.
-        sav: CloudSave = CloudSave(
+        sav: CloudSave = CloudSave.add(
             player.ckey,
             request.args.get('name'),
             request.args.get('data')
         )
-        session.add(sav)
-        session.commit()
         return jsonify({"status":"OK"})
     if route == 'delete': #Find the cloud save by name and delete it.
         sav: CloudSave = session.query(CloudSave).filter(CloudSave.ckey == player.ckey).filter(CloudSave.save_name == request.args.get('name')).one_or_none()
@@ -61,16 +58,13 @@ def cloud_hell():
     if route == 'dataput': #Abitrary, key-based write and update-only data storage. This one might get unpleasant.
         dat: CloudData = session.query(CloudData).filter(CloudData.ckey == player.ckey).filter(CloudData.key == request.args.get('key')).one_or_none()
         if dat is not None:
-            dat.value = urllib.parse.unquote(request.args.get('value'))
-            session.commit()
+            dat.update(urllib.parse.unquote(request.args.get('value')))
             return jsonify({"status":"OK"})
-        dat = CloudData(
+        dat = CloudData.add(
             player.ckey,
             request.args.get('key'),
             urllib.parse.unquote(request.args.get('value'))
         )
-        session.add(dat)
-        session.commit()
         return jsonify({"status":"OK"})
     if route == 'get': #Okay why does it fucking call this they got them the first time wtf
         sav: CloudSave = session.query(CloudSave).filter(CloudSave.ckey == player.ckey).filter(CloudSave.save_name == request.args.get('name')).one_or_none()
