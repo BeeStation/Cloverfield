@@ -158,12 +158,12 @@ class Ban(decbase):
         session.commit()
         return ban
 
-    def remove():
+    def remove(self):
         """
         Remove(Delete) a note, retains it's entry in the database.
         sets removed to 1
         """
-        removed = 1
+        self.removed = 1
         session.commit()
 
 class Connection(decbase):
@@ -368,12 +368,12 @@ class Participation_Record(decbase):
         session.commit()
         return record
 
-    def record():
+    def record(self):
         """
         Record a participation event
         (Increment by one.)
         """
-        value += 1
+        self.value += 1
         session.commit()
 
 class PlayerNote(decbase):
@@ -418,12 +418,12 @@ class PlayerNote(decbase):
         session.commit()
         return note
 
-    def remove():
+    def remove(self):
         """
         Remove(Delete) a note, retains it's entry in the database.
         sets deleted to 1
         """
-        deleted = 1
+        self.deleted = 1
         session.commit()
 
 class JobExperience(decbase):
@@ -485,12 +485,12 @@ class JobBan(decbase):
         session.add(ban)
         session.commit()
         return ban
-    def remove():
+    def remove(self):
         """
         Remove(Delete) a job ban, retains it's entry in the database.
         sets removed to 1.
         sets deletion time.
         """
-        removed = 1
-        remove_time = datetime.datetime.utcnow()
+        self.removed = 1
+        self.remove_time = datetime.datetime.utcnow()
         session.commit()
