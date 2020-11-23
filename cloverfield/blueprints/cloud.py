@@ -13,18 +13,10 @@ api_cloudhub = Blueprint('cloud', __name__)
 # Controlled entirely by parameters and stored in a godawful, confusing format.
 # I'm likely going to end up blindly accepting whatever is sent and push it to the backend without question.
 
-#Okay, structural analysis time.
-#
-#LIST: Returns the full bundle of data, both saves and data packets. May need to investigate efficiency.
-#
-#
-#
-#
-#
-#
+# Y'see all the bitching I did above?
+# Yeah no. This system is actually quite clean for what it could be.
 
-
-@api_cloudhub.route('/cloudsaves')
+@api_cloudhub.route('/cloudsaves', methods=['POST','GET'])
 def cloud_hell():
     verify_cloud()
     route:str = list(request.args)[0]

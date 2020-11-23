@@ -28,6 +28,8 @@ def check_allowed(check_key=False, api_version=API_REV):
 
     `api_version` (Default `API_REV`), Current allowed API verson.
     """
+    if request.args.get('data_version') is None:
+        abort(400)
     if(int(request.args.get('data_version')) != api_version):
         abort(400)
     if(check_key):
