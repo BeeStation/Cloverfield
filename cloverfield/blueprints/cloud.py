@@ -1,6 +1,6 @@
 from cloverfield import db
 
-from cloverfield.settings import *
+from cloverfield.settings import cfg
 from cloverfield.db import session, Player, CloudSave, CloudData
 
 import urllib.parse
@@ -73,6 +73,6 @@ def dump_user_data():
 def verify_cloud(): #The cloud has it's own auth system. I hate it.
     if(request.args.get('api_key') is None):
         abort(401)
-    if(request.args.get('api_key') != CLOUD_KEY):
+    if(request.args.get('api_key') != cfg["keys"]["cloud_key"]):
         abort(403)
     return 0

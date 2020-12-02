@@ -1,4 +1,4 @@
-from cloverfield.settings import *
+from cloverfield.settings import cfg
 from cloverfield.util.helpers import ip_getstr
 from cloverfield.statics.database import * # pylint: disable=unused-wildcard-import
 from cloverfield.extensions import sqlalchemy_ext

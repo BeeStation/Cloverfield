@@ -1,0 +1,23 @@
+api_rev = 1
+
+callback_timeout = 10
+
+[keys]
+api_key = "$CLVF_API_KEY"
+cloud_key = "$CLVF_CLOUD_KEY"
+hublog_key = "$CLVF_HUBLOG_KEY"
+notes_key = "$CLVF_NOTES_KEY"
+
+usec_key = "$CLVF_USEC_KEY"
+usec_secret = "$CLVF_USEC_SECRET"
+
+[db]
+host = "$CLVF_DB_HOST"
+port = "$CLVF_DB_PORT"
+user = "$CLVF_DB_USERNAME"
+pass = "$CLVF_DB_PASSWORD"
+dbname = "$CLVF_DB_DBNAME"
+
+[game]
+host = "127.0.0.1"
+port = 20005

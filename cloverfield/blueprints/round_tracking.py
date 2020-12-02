@@ -1,6 +1,6 @@
 from cloverfield import db
 
-from cloverfield.settings import *
+from cloverfield.settings import cfg
 from cloverfield.util.helpers import check_allowed, ip_getstr
 from cloverfield.db import Connection, Round_Entry, session, Player, Participation_Record
 
@@ -74,6 +74,6 @@ def get_player_info(): #see formats/playerinfo_get.json
 def verify_parser():
     if(request.args.get('token') is None):
         abort(401)
-    if(request.args.get('token') != HUBLOG_KEY):
+    if(request.args.get('token') != cfg["keys"]["hublog_key"]):
         abort(403)
     return 0

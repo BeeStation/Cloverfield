@@ -1,6 +1,6 @@
 from cloverfield import db
 
-from cloverfield.settings import *
+from cloverfield.settings import cfg
 from cloverfield.util.helpers import verify_api
 from cloverfield.db import session
 

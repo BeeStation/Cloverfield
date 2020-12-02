@@ -1,6 +1,6 @@
 from cloverfield import db
 
-from cloverfield.settings import *
+from cloverfield.settings import cfg
 from cloverfield.db import session
 
 from flask import Blueprint, jsonify, request, abort
@@ -46,5 +46,5 @@ def handle_noteaccess():
 def verify_notes():
     if(request.args.get('auth') is None):
         abort(401)
-    if(request.args.get('auth') != NOTES_KEY):
+    if(request.args.get('auth') != cfg["keys"]["notes_key"]):
         abort(403)

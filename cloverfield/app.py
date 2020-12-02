@@ -1,7 +1,7 @@
 from cloverfield.db import session
 from cloverfield.util.orm_serializers import JSON_Goon
 from cloverfield.extensions import sqlalchemy_ext
-from cloverfield.settings import *
+from cloverfield.settings import cfg
 
 from flask import Flask
 
@@ -27,11 +27,11 @@ def create_app():
 	app.url_map.strict_slashes = False
 
 	app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://{username}:{password}@{host}:{port}/{db}".format(
-		username	= MARIADB_USER,
-		password	= MARIADB_PASS,
-		host		= MARIADB_SERVER,
-		port		= MARIADB_PORT,
-		db			= MARIADB_DBNAME
+		username	= cfg["db"]["user"],
+		password	= cfg["db"]["pass"],
+		host		= cfg["db"]["host"],
+		port		= cfg["db"]["port"],
+		db			= cfg["db"]["dbname"]
 	)
 
 	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False #We don't use this anyways, afaik
