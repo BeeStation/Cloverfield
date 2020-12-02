@@ -3,3 +3,4 @@ Flask==1.1.2
 flask-sqlalchemy==2.4.4
 PyJWT==1.7.1
 mysqlclient==2.0.1
+envtoml==0.1.2

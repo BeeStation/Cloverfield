@@ -1,4 +1,4 @@
-from cloverfield.settings import *
+from cloverfield.settings import cfg
 
 import ipaddress
 from flask import request, abort
@@ -13,12 +13,12 @@ def verify_api(packet):
     auth = packet.args.get('auth')
     if(not auth):
         abort(401)
-    if(auth == API_KEY):
+    if(auth == cfg["keys"]["api_key"]):
         return
     return abort(403)
 
 
-def check_allowed(check_key=False, api_version=API_REV):
+def check_allowed(check_key=False, api_version=cfg["api_rev"]):
     """
     Configurable integrity check function.
 
@@ -26,7 +26,7 @@ def check_allowed(check_key=False, api_version=API_REV):
 
     `check_key` (Default `False`), Verify API access is allowed.
 
-    `api_version` (Default `API_REV`), Current allowed API verson.
+    `api_version` (Default `cfg["api_rev"]`), Current allowed API verson.
     """
     if request.args.get('data_version') is None:
         abort(400)
