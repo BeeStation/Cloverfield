@@ -12,7 +12,26 @@
             "env": {
                 "FLASK_APP": "cloverfield/app.py",
                 "FLASK_ENV": "development",
-                "FLASK_DEBUG": "0"
+                "FLASK_DEBUG": "0",
+                //CF Specific default API keys
+
+                //Hashed keys
+                "CLVF_API_KEY": "8069c5b5263d2ee0784a50d3d4ff2760f96c281c37a2d3ecb9a48e4a2b79fd8c",
+                "CLVF_HUBLOG_KEY": "a96afa027790666833608831f23d19c42219f329589efdf81a4e9cffb08c19f2",
+
+                //Raw keys
+                "CLVF_CLOUD_KEY": "STRING_OF_SHIT",
+                "CLVF_NOTES_KEY": "AUTH_NOTES",
+                "CLVF_USEC_KEY": "WEB_TOK",
+                "CLVF_USEC_SECRET": "DEV_SECRET_NO_PROD",
+
+                //SQL Data.
+                "CLVF_DB_HOST": "127.0.0.1",
+                "CLVF_DB_PORT": "3306",
+                "CLVF_DB_USERNAME": "root",
+                "CLVF_DB_PASSWORD": "dum",
+                "CLVF_DB_DBNAME": "goonhub"
+
             },
             "args": [
                 "run",
