@@ -138,7 +138,6 @@ def edit_ban():
         }}, secure=True))
         return jsonify("OK")
     else:
-        session.close()
         asyncio.run(hub_callback('editBan',{"Ban does not exist."}))
         return jsonify("OK")
     return {"ERROR"}

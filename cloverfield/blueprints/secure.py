@@ -119,7 +119,6 @@ def bans_sort_all():
     for x in bans:
         ret.update({str(x.id): flask.json.loads(flask.json.dumps(x))})
     ret.update({'total': query.count()})
-    session.close()
     return ret
 
 def bans_sort_ckey():
@@ -136,7 +135,6 @@ def bans_sort_ckey():
     for x in bans:
         ret.update({str(x.id): flask.json.loads(flask.json.dumps(x))})
     ret.update({'total': query.count()})
-    session.close()
     return ret
 
 def bans_sort_akey():
@@ -154,7 +152,6 @@ def bans_sort_akey():
     for x in bans:
         ret.update({str(x.id): flask.json.loads(flask.json.dumps(x))})
     ret.update({'total': query.count()})
-    session.close()
     return ret
 
 def bans_sort_reason():
@@ -172,7 +169,6 @@ def bans_sort_reason():
     for x in bans:
         ret.update({str(x.id): flask.json.loads(flask.json.dumps(x))})
     ret.update({'total': query.count()})
-    session.close()
     return ret
 
 def bans_sort_compID():
@@ -190,7 +186,6 @@ def bans_sort_compID():
     for x in bans:
         ret.update({str(x.id): flask.json.loads(flask.json.dumps(x))})
     ret.update({'total': query.count()})
-    session.close()
     return ret
 
 def bans_sort_ip():
@@ -208,7 +203,6 @@ def bans_sort_ip():
     for x in bans:
         ret.update({str(x.id): flask.json.loads(flask.json.dumps(x))})
     ret.update({'total': query.count()})
-    session.close()
     return ret
 
 #Another annoyingly specific route. Stub and investigate later.

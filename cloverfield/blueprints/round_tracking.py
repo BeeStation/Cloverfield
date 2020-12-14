@@ -33,7 +33,7 @@ def handle_roundstate():
         rnd: Round_Entry = Round_Entry.get_latest(session, request.args.get('round_server'))
         rnd.mark_end(request.args.get('round_name'), request.args.get('mode'), request.args.get('end_reason'))
         return jsonify("OK")
-    session.close()
+
     return abort(400)
 
 
