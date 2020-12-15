@@ -275,7 +275,7 @@ class CloudData(decbase):
         Update the current value of this data unit.
         Must be provided in usable form.
         """
-        value = val
+        self.value = val
         session.commit()
 
 #This struct is mercifully ephemeral and entirely managed by the API system.
