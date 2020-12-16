@@ -79,13 +79,27 @@ def route_antaghistory_record(): #RECORDS /SELECTION/, not /PARTICIPATION/
             ply: db.Player = db.Player.from_ckey(request.args.get('players['+str(i)+'][ckey]'))
             #IIRC, we should 100% have a selected entry at this point.
             rec: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == ("selected_"+request.args.get('players['+str(i)+'][role]'))).one_or_none()
-            rec.value += 1
+            if rec is not None:
+                rec.record()
+            else
+                rec = db.Participation_Record.add(
+                    request.args.get('players['+str(i)+'][ckey]'),
+                    request.args.get('players['+str(i)+'][role]'),
+                    1
+                )
             i += 1
     else: #uuuugh this is ugly copypaste but I'm exhausted and I just want to see this working. FIXME FIXME FIXME
         ply: db.Player = db.Player.from_ckey(request.args.get('players'))
         #IIRC, we should 100% have a selected entry at this point.
         rec: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == ("selected_"+request.args.get('role'))).one_or_none()
-        rec.record()
+        if rec is not None:
+            rec.record()
+        else
+            rec = db.Participation_Record.add(
+                request.args.get('players['+str(i)+'][ckey]'),
+                request.args.get('players['+str(i)+'][role]'),
+                1
+            )
     return jsonify({"OK":"Data Accepted"})
 
 @api_antags.route('/antags/completeHistory/')
