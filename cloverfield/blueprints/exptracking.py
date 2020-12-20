@@ -14,8 +14,10 @@ api_exptrak = Blueprint('exp_tracking', __name__)
 def get_jobexp():
     check_allowed(True)
     ply: db.Player = db.Player.from_ckey(request.args.get("ckey"))
-    record: db.JobExperience = ply.jobexp.filter(db.JobExperience.key == request.args.get("type")).one_or_none()
-    if(record is None):#Don't bother creating the record for now, we have more of these to handle.
+    record: db.JobExperience = None
+    if ply is not None:
+        record: db.JobExperience = ply.jobexp.filter(db.JobExperience.key == request.args.get("type")).one_or_none()
+    if record is None: #Don't bother creating the record for now, and if they somehow don't have a player, sucks. we have more of these to handle.
         return jsonify({request.args.get('ckey'):{request.args.get('type'):0}})
 
     return jsonify({request.args.get('ckey'):{record.key:record.val}})

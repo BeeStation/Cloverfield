@@ -94,7 +94,7 @@ def route_antaghistory_record(): #RECORDS /SELECTION/, not /PARTICIPATION/
         rec: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == ("selected_"+request.args.get('role'))).one_or_none()
         if rec is not None:
             rec.record()
-        else
+        else:
             rec = db.Participation_Record.add(
                 request.args.get('players['+str(i)+'][ckey]'),
                 request.args.get('players['+str(i)+'][role]'),
