@@ -91,7 +91,7 @@ def route_antaghistory_record(): #RECORDS /SELECTION/, not /PARTICIPATION/
     else: #uuuugh this is ugly copypaste but I'm exhausted and I just want to see this working. FIXME FIXME FIXME
         ply: db.Player = db.Player.from_ckey(request.args.get('players'))
         #IIRC, we should 100% have a selected entry at this point.
-        rec: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == (f"selected_{+request.args.get('role')}")).one_or_none()
+        rec: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == (f"selected_{request.args.get('role')}")).one_or_none()
         if rec:
             rec.record()
         else:
