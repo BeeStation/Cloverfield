@@ -16,8 +16,8 @@ def get_jobexp():
     ply: db.Player = db.Player.from_ckey(request.args.get("ckey"))
     if ply:
         record: db.JobExperience = ply.jobexp.filter(db.JobExperience.key == request.args.get("type")).one_or_none()
-            if record:
-                return jsonify({request.args.get('ckey'):{record.key:record.val}})
+        if record:
+            return jsonify({request.args.get('ckey'):{record.key:record.val}})
     #Don't bother creating the record for now, and if they somehow don't have a player, sucks. we have more of these to handle.
     return jsonify({request.args.get('ckey'):{request.args.get('type'):0}})
 
