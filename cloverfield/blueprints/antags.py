@@ -35,9 +35,9 @@ def route_antaghistory_singlemode():
     #This route is gonna be pretty ugly.
     i = 0
     history: dict = dict()
-    while request.args.get(f'players[{str(i)}]'):
+    while request.args.get(f'players[{i}]'):
         # history.append(get_antaghistory(request.args.get('ckeys['+str(i)+']'),request.args.get('role')))
-        history[request.args.get(f'players[{str(i)}]')] = get_antaghistory(request.args.get(f'players[{str(i)}]'),request.args.get('role'), session)
+        history[request.args.get(f'players[{i}]')] = get_antaghistory(request.args.get(f'players[{i}]'),request.args.get('role'), session)
         i += 1
     #Do additional transformations as necessary.
 
@@ -75,16 +75,16 @@ def route_antaghistory_record(): #RECORDS /SELECTION/, not /PARTICIPATION/
     #Are we dealing with a batch or single request? This is the only API where they attempt to combine both and I despise it.
     if request.args.get('players[0][role]'):
         i = 0
-        while request.args.get(f'players[{str(i)}][role]'):
-            ply: db.Player = db.Player.from_ckey(request.args.get(f'players[{str(i)}][ckey]'))
+        while request.args.get(f'players[{i}][role]'):
+            ply: db.Player = db.Player.from_ckey(request.args.get(f'players[{i}][ckey]'))
             #IIRC, we should 100% have a selected entry at this point.
-            rec: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == (f"selected_{request.args.get(f'players[{str(i)}][role]')}")).one_or_none()
+            rec: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == (f"selected_{request.args.get(f'players[{i}][role]')}")).one_or_none()
             if rec:
                 rec.record()
             else:
                 rec = db.Participation_Record.add(
-                    request.args.get(f'players[{str(i)}][ckey]'),
-                    request.args.get(f'players[{str(i)}][role]'),
+                    request.args.get(f'players[{i}][ckey]'),
+                    request.args.get(f'players[{i}][role]'),
                     1
                 )
             i += 1
@@ -96,8 +96,8 @@ def route_antaghistory_record(): #RECORDS /SELECTION/, not /PARTICIPATION/
             rec.record()
         else:
             rec = db.Participation_Record.add(
-                request.args.get(f'players[{str(i)}][ckey]'),
-                request.args.get(f'players[{str(i)}][role]'),
+                request.args.get(f'players[{i}][ckey]'),
+                request.args.get(f'players[{i}][role]'),
                 1
             )
     return jsonify({"OK":"Data Accepted"})
