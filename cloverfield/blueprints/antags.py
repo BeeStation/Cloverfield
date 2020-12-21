@@ -48,14 +48,14 @@ def get_antaghistory(ckey, mode, session, calc:bool = False):
     If `calc`, spend the extra cycles calculating their current percentage.
     """
     ply: db.Player = db.Player.from_ckey(ckey)
-    rec_sen: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == (f"participation_{mode}")).one_or_none()
+    rec_sen: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == f"participation_{mode}").one_or_none()
     if rec_sen is None: #New player, go ahead and create the record at least.
         rec_sen = db.Participation_Record.add(
             ckey,
             f"participation_{mode}",
             0
         )
-    rec_cho: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == (f"selected_{mode}")).one_or_none()
+    rec_cho: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == f"selected_{mode}").one_or_none()
     if rec_cho is None:
         rec_cho = db.Participation_Record.add(
             ckey,
@@ -78,7 +78,7 @@ def route_antaghistory_record(): #RECORDS /SELECTION/, not /PARTICIPATION/
         while request.args.get(f'players[{i}][role]'):
             ply: db.Player = db.Player.from_ckey(request.args.get(f'players[{i}][ckey]'))
             #IIRC, we should 100% have a selected entry at this point.
-            rec: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == (f"selected_{request.args.get(f'players[{i}][role]')}")).one_or_none()
+            rec: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == f"selected_{request.args.get(f'players[{i}][role]')}").one_or_none()
             if rec:
                 rec.record()
             else:
@@ -91,7 +91,7 @@ def route_antaghistory_record(): #RECORDS /SELECTION/, not /PARTICIPATION/
     else: #uuuugh this is ugly copypaste but I'm exhausted and I just want to see this working. FIXME FIXME FIXME
         ply: db.Player = db.Player.from_ckey(request.args.get('players'))
         #IIRC, we should 100% have a selected entry at this point.
-        rec: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == (f"selected_{request.args.get('role')}")).one_or_none()
+        rec: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == f"selected_{request.args.get('role')}").one_or_none()
         if rec:
             rec.record()
         else:
