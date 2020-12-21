@@ -63,7 +63,7 @@ class Player(decbase):
 
     @classmethod
     def from_ckey(cls, ckey):
-            return session.query(cls).filter(cls.ckey == ckey).one_or_none()
+        return session.query(cls).filter(cls.ckey == ckey).one_or_none()
 
     def get_historic_inetaddr(self, return_type = RET_INT):
         """
