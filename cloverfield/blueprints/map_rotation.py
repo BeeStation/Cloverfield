@@ -13,4 +13,4 @@ def route_mapswitch():
         #TGS Not configured, Abort.
         return jsonify({"error":"This API Does not support Mapswitching. Contact your host."}), 500
     interact_tgs.trigger_compile()
-    return jsonify(""), 201
+    return jsonify({"response":"201"}), 200 # this format is weird because it's forwarding jenkins shit.
