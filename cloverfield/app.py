@@ -15,7 +15,7 @@ from flask import Flask
 
 
 #Import prints.
-from cloverfield.blueprints import participation, secret_sauce, extras, bans, cloud, stubbed_routes, round_tracking, antags, secure, notes, exptracking
+from cloverfield.blueprints import participation, secret_sauce, extras, bans, cloud, stubbed_routes, round_tracking, antags, secure, notes, exptracking, map_rotation
 
 
 def register_extensions(app):
@@ -55,6 +55,7 @@ app.register_blueprint(antags.api_antags)
 app.register_blueprint(secure.api_secure)
 app.register_blueprint(notes.api_notes)
 app.register_blueprint(exptracking.api_exptrak)
+app.register_blueprint(map_rotation.api_maprotation)
 
 app.json_encoder = JSON_Goon #Overwrite the default encoder to serialize bans.
 
