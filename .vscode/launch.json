@@ -30,7 +30,13 @@
                 "CLVF_DB_PORT": "3306",
                 "CLVF_DB_USERNAME": "root",
                 "CLVF_DB_PASSWORD": "dum",
-                "CLVF_DB_DBNAME": "goonhub"
+                "CLVF_DB_DBNAME": "goonhub",
+
+                "CLVF_TGS_HOST": "http://localhost:8080",
+                "CLVF_TGS_APIVER": "Tgstation.Server.Api/8.1.2",
+                "CLVF_TGS_USER": "Admin",
+                "CLVF_TGS_PASS": "ISolemlySwearToDeleteTheDataDirectory",
+                "CLVF_TGS_INSTANCE": "1"
 
             },
             "args": [

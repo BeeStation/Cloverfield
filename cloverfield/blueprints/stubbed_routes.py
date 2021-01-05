@@ -10,10 +10,6 @@ def route_getgauntletdata():
 
 #Stuff that probably isn't all that necessary and can stay dummied out like this.
 
-@api_deadroutes.route('/map-switcher/switch/')
-def route_mapswitch():
-    return jsonify({"error":"unimplimented"}) #Not Currently Supported
-
 @api_deadroutes.route('/bans/addException/')
 def route_addbanimmunity():
     return jsonify({"error":"unimplimented"}) #This route SHOULD NEVER be actually implimented, it's stupid and dangerous.
