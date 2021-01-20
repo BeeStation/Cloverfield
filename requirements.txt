@@ -5,3 +5,4 @@ requests==2.25.1
 envtoml==0.1.2
 mysqlclient==2.0.1
 PyJWT==2.0.0
+elastic-apm[flask]==5.10.0

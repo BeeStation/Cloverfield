@@ -29,3 +29,9 @@ apiver = "$CLVF_TGS_APIVER"
 user = "$CLVF_TGS_USER"
 pass = "$CLVF_TGS_PASS"
 instance = "$CLVF_TGS_INSTANCE" #TGS4 Instance ID.
+
+[apm]
+enabled = false
+name = "cloverfield"
+token = "$CLVF_APM_TOKEN"
+url = "$CLVF_APM_URL"

@@ -4,7 +4,7 @@ from cloverfield.extensions import sqlalchemy_ext
 from cloverfield.settings import cfg
 
 from flask import Flask
-
+from elasticapm.contrib.flask import ElasticAPM
 
 #Cloverfield API System, Reverse engineered from Goonhub.
 # Made to operate with Project Clover, Beestation's modification of Goonstation.
@@ -38,10 +38,19 @@ def create_app():
 
 	register_extensions(app)
 
+	app.config['ELASTIC_APM'] = {
+		'SERVICE_NAME': cfg["apm"]["name"],
+		'SECRET_TOKEN': cfg["apm"]["token"],
+		'SERVER_URL': cfg["apm"]["url"],
+		'DEBUG': True,
+	}
+
 	return app
 
 app = create_app()
-
+apm = None
+if(cfg["apm"]["enabled"]):
+	apm = ElasticAPM(app)
 
 #Register segmented modules.
 app.register_blueprint(participation.api_participation) #COMPLETE, mercifully
