@@ -39,7 +39,7 @@ def create_app():
 	register_extensions(app)
 
 	app.config['ELASTIC_APM'] = {
-		'SERVICE_NAME': 'cloverfield',
+		'SERVICE_NAME': cfg["apm"]["name"],
 		'SECRET_TOKEN': cfg["apm"]["token"],
 		'SERVER_URL': cfg["apm"]["url"],
 		'DEBUG': True,

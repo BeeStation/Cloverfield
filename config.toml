@@ -32,6 +32,6 @@ instance = "$CLVF_TGS_INSTANCE" #TGS4 Instance ID.
 
 [apm]
 enabled = false
-name = "$CLVF_APM_NAME"
+name = "cloverfield"
 token = "$CLVF_APM_TOKEN"
 url = "$CLVF_APM_URL"
