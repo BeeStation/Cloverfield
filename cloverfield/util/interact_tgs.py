@@ -41,6 +41,7 @@ def req_bearer(func):
     Decorator for TGS Functions that require authentication.
     """
     def wrapper():
+        global bearer_token
         if(bearer_token is None):
             _update_bearer_token()
         func()
