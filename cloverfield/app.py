@@ -48,6 +48,7 @@ def create_app():
 	return app
 
 app = create_app()
+apm = None
 if(cfg["apm"]["enabled"]):
 	apm = ElasticAPM(app)
 
