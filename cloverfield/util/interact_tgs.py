@@ -10,6 +10,7 @@ from flask import abort
 #with token expiry.
 
 #...I'm going to be proven wrong as hell aren't I.
+#Y E P
 
 bearer_token = None #TGS4 Bearer Token.
 user_agent = f"Cloverfield-API v{cfg['api_rev']}"
@@ -43,6 +44,8 @@ def req_bearer(func):
         if(bearer_token is None):
             _update_bearer_token()
         func()
+        #FIXME expire tokens instead of spending them.
+        bearer_token = None #for now just void it to make my job easier.
     return wrapper
 
 @req_bearer
