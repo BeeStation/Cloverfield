@@ -20,7 +20,7 @@ def handle_noteaccess():
         )
         return jsonify({"OK":"Data Accepted"})
     if request.args.get('action') == 'delete':
-        note: db.PlayerNote = db.PlayerNote.from_id(session, request.args.get('id'))
+        note: db.PlayerNote = db.PlayerNote.from_id(request.args.get('id'))
         if note is None:
             abort(400)
         note.remove()

@@ -17,7 +17,7 @@ def handle_roundstate():
     verify_parser()
     #Switch by round_status argument
     if(request.args.get('round_status') == 'start'):
-        old_rnd: Round_Entry = Round_Entry.get_latest(session, request.args.get('round_server'))
+        old_rnd: Round_Entry = Round_Entry.get_latest(request.args.get('round_server'))
         if old_rnd is not None and old_rnd.reason is None:  #The round was restarted without providing a reason.
             old_rnd.reason = 3      #Fill in reason column to prevent repeat and to mark rounds as errored.
         #We need to create the round datum.

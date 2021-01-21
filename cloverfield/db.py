@@ -294,7 +294,7 @@ class Round_Entry(decbase):
         self.start_stamp = start_stamp
 
     @classmethod
-    def from_id(cls, session, round_id):
+    def from_id(cls, round_id):
         """
         Retrieves a round from it's id.
         """
@@ -304,7 +304,7 @@ class Round_Entry(decbase):
             return None
 
     @classmethod
-    def get_latest(cls, session, tag):
+    def get_latest(cls, tag):
         """
         Retrieves the latest round of a particular server, by server ID.
         """
@@ -390,7 +390,7 @@ class PlayerNote(decbase):
         self.note = note
 
     @classmethod
-    def from_id(cls, session, id):
+    def from_id(cls, id):
         """
         Retrieve a note from it's database ID.
         """

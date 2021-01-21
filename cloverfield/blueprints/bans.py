@@ -22,7 +22,7 @@ def check_ban():
         player = db.Player.add(request.args.get('ckey'), ip_getint(request.args.get('ip')), request.args.get('compID'))
 
     #Log Connection
-    db.Connection.add(request.args.get('ckey'), ip_getint(request.args.get('ip')), request.args.get('compID'), request.args.get('record'), db.Round_Entry.get_latest(session, request.args.get('data_id')).id)
+    db.Connection.add(request.args.get('ckey'), ip_getint(request.args.get('ip')), request.args.get('compID'), request.args.get('record'), db.Round_Entry.get_latest(request.args.get('data_id')).id)
 
     #Generate Return
     if player.flags & FLAG_EXEMPT:#Exempt. We're done here.
@@ -100,7 +100,7 @@ def remove_ban():
     #every detail we can.
 
     #Retreive the assumedly targeted ban from the database.
-    target_ban: db.Ban = db.Ban.from_id(session, request.args.get('id'))
+    target_ban: db.Ban = db.Ban.from_id( request.args.get('id'))
 
     #Verify the data. If it's wrong close the session and abort.
     if  target_ban.ckey != request.args.get('ckey') or \
@@ -115,7 +115,7 @@ def remove_ban():
 @api_ban.route('/bans/edit/')
 def edit_ban():
     check_allowed(True)
-    target_ban: db.Ban = db.Ban.from_id(session, request.args.get('id'))
+    target_ban: db.Ban = db.Ban.from_id( request.args.get('id'))
     if target_ban is not None:
         target_ban.ckey =      request.args.get('ckey')
         target_ban.ip =        ip_getint(request.args.get('ip')) if request.args.get('ip') != 'N/A' else -1
