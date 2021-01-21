@@ -103,7 +103,7 @@ def bans_sort_all():
             db.Ban.ckey.like(searchval),
             db.Ban.akey.like(searchval),
             db.Ban.reason.like(searchval),
-            db.Ban.ip.like(ip_getint(searchval)),
+            db.Ban.ip.like(ip_getint(searchval) if searchval.isdigit() else searchval),
             db.Ban.cid.like(searchval),
             db.Ban.oakey.like(searchval)
         ))
