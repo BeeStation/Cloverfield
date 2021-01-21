@@ -1,20 +1,14 @@
-from cloverfield import db
-
-from cloverfield.settings import cfg
-from cloverfield.db import session
-from cloverfield.util.helpers import ip_getint
-from cloverfield.blueprints.round_tracking import latest_known_rounds
-
 from flask import request, Blueprint, abort, jsonify
 import jwt
 import datetime
-
 import sqlalchemy
 import sqlalchemy.orm
-
-import re
 import flask.json
 
+from cloverfield import db
+from cloverfield.settings import cfg
+from cloverfield.db import session
+from cloverfield.util.helpers import ip_getint
 
 api_secure = Blueprint('secure', __name__)
 
@@ -55,7 +49,7 @@ def usec_issuejwt():
         #Qualified Claims
         'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=2),
         'nbf': datetime.datetime.utcnow(),
-        'iss': 'Cloverfield_FOR_CVR-'+str(request.args.get('server_id')).upper,
+        'iss': 'Cloverfield_FOR_CVR-'+str(request.args.get('server_id')).upper(),
         'aud': 'CF_BANLIST',
         'iat': datetime.datetime.utcnow(),
 
@@ -77,9 +71,9 @@ def usec_testjwt():
 #Ban Retrieval API
 @api_secure.route('/usec/public/bans/get')
 def secure_get_banpanel():
-    z = verify_secure()
-    if z is not None:
-        return z, 401
+    key_check = verify_secure()
+    if key_check is not None:
+        return key_check, 401
     rsp:flask.Response
     if request.args.get('search[all]') is not None:
         rsp = jsonify(bans_sort_all())
@@ -104,6 +98,7 @@ def bans_sort_all():
     searchval:str = str(request.args.get('search[all]'))
     if searchval == '' or None:
         searchval = '%'
+    #pylint: disable=no-member
     query: sqlalchemy.orm.query = session.query(db.Ban).filter(db.Ban.removed == int(request.args.get('removed')))\
         .filter(sqlalchemy.or_(
             db.Ban.ckey.like(searchval),
@@ -155,7 +150,6 @@ def bans_sort_akey():
     return ret
 
 def bans_sort_reason():
-    session:sqlalchemy.orm.Session = Session()
     searchval:str = str(request.args.get('search[reason]'))
     if searchval == '' or None:
         searchval = '%'
@@ -172,7 +166,6 @@ def bans_sort_reason():
     return ret
 
 def bans_sort_compID():
-    session:sqlalchemy.orm.Session = Session()
     searchval:str = str(request.args.get('search[compID]'))
     if searchval == '' or None:
         searchval = '%'
@@ -189,7 +182,6 @@ def bans_sort_compID():
     return ret
 
 def bans_sort_ip():
-    session:sqlalchemy.orm.Session = Session()
     searchval:str = str(request.args.get('search[ip]'))
     if searchval == '' or None:
         searchval = '%'
@@ -219,13 +211,16 @@ def secure_getprevious_banpanel():
 
 def verify_secure():
     try:
-        x:dict=jwt.decode(bytes(request.args.get('token') if request.args.get('token') is not None else request.args.get('auth'), 'utf8'), cfg["keys"]["usec_secret"], algorithms='HS512', audience='CF_BANLIST')
+        x:dict=jwt.decode(
+            bytes(request.args.get('token') if request.args.get('token') is not None else request.args.get('auth'), 'utf8'),#pylint: disable=line-too-long #deal with it
+            cfg["keys"]["usec_secret"], algorithms='HS512', audience='CF_BANLIST')
         #FIXME CHECK DISABLED FOR TESTING, DO NOT RUN IN PROD.
         # if int(x['rid']) != latest_known_rounds[request.args.get('servertag') if request.args.get('servertag') is not None else request.args.get('data_id')]: #Token expired by round change.
         #     raise Exception("Token expired by round ID mismatch.")
         if int(x['arv']) != cfg["api_rev"]:
             raise Exception("!!!TOKEN CLAIMS VALID BUT API VERSION IS WRONG!!!") #This should never happen.
-    except: #trap every single error and forbid.
+
+    except Exception:#pylint: disable=broad-except #trap every single error and forbid.
         return {"error":"Token invalid, it may be expired."}
     return
 

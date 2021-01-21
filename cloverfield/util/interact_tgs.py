@@ -1,8 +1,8 @@
-import requests
 import base64
-import json
-from cloverfield.settings import cfg
+import requests
 from flask import abort
+from cloverfield.settings import cfg
+
 
 #TGS4 Interaction code
 #Due to all of this resetting after every request,
@@ -12,7 +12,7 @@ from flask import abort
 #...I'm going to be proven wrong as hell aren't I.
 #Y E P
 
-bearer_token = None #TGS4 Bearer Token.
+BEARER_TOKEN = None #TGS4 Bearer Token.
 user_agent = f"Cloverfield-API v{cfg['api_rev']}"
 
 basic_header = {
@@ -24,7 +24,7 @@ basic_header = {
 
 #Module Private, if we have no bearer token, we need to get a new one.
 def _update_bearer_token():
-    global bearer_token
+    global BEARER_TOKEN #pylint:disable=global-statement
     auth = base64.b64encode(f"{cfg['tgs']['user']}:{cfg['tgs']['pass']}".encode('ascii')).decode('ascii')
 
     url = cfg["tgs"]["host"]
@@ -34,26 +34,26 @@ def _update_bearer_token():
     if(response.status_code > 299):
         abort(response.status_code) #Abort with the status code if not 2XX or informational.
     response_ct = response.json()
-    bearer_token = response_ct["bearer"]
+    BEARER_TOKEN = response_ct["bearer"]
 
 def req_bearer(func):
     """
     Decorator for TGS Functions that require authentication.
     """
     def wrapper():
-        global bearer_token
-        if(bearer_token is None):
+        global BEARER_TOKEN #pylint:disable=global-statement
+        if(BEARER_TOKEN is None):
             _update_bearer_token()
         func()
         #FIXME expire tokens instead of spending them.
-        bearer_token = None #for now just void it to make my job easier.
+        BEARER_TOKEN = None #for now just void it to make my job easier.
     return wrapper
 
 @req_bearer
 def trigger_compile():
     headers = basic_header.copy()
     headers.update({
-        "Authorization": f"Bearer {bearer_token}",
+        "Authorization": f"Bearer {BEARER_TOKEN}",
         "Instance": str(cfg["tgs"]["instance"])
     })
     url = f"{cfg['tgs']['host']}{'/DreamMaker'}"

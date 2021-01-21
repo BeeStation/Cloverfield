@@ -1,18 +1,14 @@
+import datetime
+import collections
+from sqlalchemy import * # pylint: disable=unused-wildcard-import
+from sqlalchemy.orm import relationship
+from sqlalchemy.orm.exc import NoResultFound
+
+
 from cloverfield.settings import cfg
 from cloverfield.util.helpers import ip_getstr
 from cloverfield.statics.database import * # pylint: disable=unused-wildcard-import
 from cloverfield.extensions import sqlalchemy_ext
-
-from sqlalchemy import * # pylint: disable=unused-wildcard-import
-
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm.exc import NoResultFound
-
-from urllib.parse import quote
-
-import datetime
-import collections
-
 
 session = sqlalchemy_ext.session
 decbase = sqlalchemy_ext.Model
@@ -129,12 +125,12 @@ class Ban(decbase):
         self.chain = chain
 
     @classmethod
-    def from_id(cls, session, id):
+    def from_id(cls, banid):
         """
         Retrieve a ban from it's database ID.
         """
         try:
-            return session.query(cls).filter(cls.id == id).one()
+            return session.query(cls).filter(cls.id == banid).one()
         except NoResultFound:
             return None
 
@@ -298,12 +294,12 @@ class Round_Entry(decbase):
         self.start_stamp = start_stamp
 
     @classmethod
-    def from_id(cls, session, id):
+    def from_id(cls, session, round_id):
         """
         Retrieves a round from it's id.
         """
         try:
-            return session.query(cls).filter(cls.id == id).one()
+            return session.query(cls).filter(cls.id == round_id).one()
         except NoResultFound:
             return None
 

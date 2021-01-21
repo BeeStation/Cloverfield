@@ -1,3 +1,7 @@
 {
-    "python.linting.enabled": false
+    "python.linting.enabled": true,
+    "python.linting.pylintArgs": [
+        "--rcfile", ".pylintrc",
+        "--load-plugins", "pylint_flask_sqlalchemy"
+    ]
 }
