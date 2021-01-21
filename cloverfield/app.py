@@ -19,38 +19,44 @@ from cloverfield.blueprints import participation, secret_sauce, extras, bans, cl
 
 
 def register_extensions(app):
-	sqlalchemy_ext.init_app(app)
+    sqlalchemy_ext.init_app(app)
 
 def create_app():
-	app = Flask(__name__)
+    app = Flask(__name__)
 
-	app.url_map.strict_slashes = False
+    app.url_map.strict_slashes = False
 
-	app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://{username}:{password}@{host}:{port}/{db}".format(
-		username	= cfg["db"]["user"],
-		password	= cfg["db"]["pass"],
-		host		= cfg["db"]["host"],
-		port		= cfg["db"]["port"],
-		db			= cfg["db"]["dbname"]
-	)
+    app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://{username}:{password}@{host}:{port}/{db}".format(
+        username    = cfg["db"]["user"],
+        password    = cfg["db"]["pass"],
+        host        = cfg["db"]["host"],
+        port        = cfg["db"]["port"],
+        db          = cfg["db"]["dbname"]
+    )
 
-	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False #We don't use this anyways, afaik
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False #We don't use this anyways, afaik
 
-	register_extensions(app)
+    register_extensions(app)
 
-	app.config['ELASTIC_APM'] = {
-		'SERVICE_NAME': cfg["apm"]["name"],
-		'SECRET_TOKEN': cfg["apm"]["token"],
-		'SERVER_URL': cfg["apm"]["url"],
-		'DEBUG': True,
-	}
+    app.config['ELASTIC_APM'] = {
+        'SERVICE_NAME': cfg["apm"]["name"],
+        'SECRET_TOKEN': cfg["apm"]["token"],
+        'SERVER_URL': cfg["apm"]["url"],
+        'DEBUG': True,
+        'SANITIZE_FIELD_NAMES': (
+            'auth',
+            'compID',
+            'ip',
+            'cid'
+        )
+    }
 
-	return app
+    return app
 
 app = create_app()
 apm = None
 if(cfg["apm"]["enabled"]):
-	apm = ElasticAPM(app)
+    apm = ElasticAPM(app)
 
 #Register segmented modules.
 app.register_blueprint(participation.api_participation) #COMPLETE, mercifully
