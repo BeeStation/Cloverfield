@@ -42,7 +42,7 @@ def ip_getint(ip):
     try:
         return int(ipaddress.IPv4Address(ip))
     except:
-        return 0
+        return int(ip) #Try to typecast it. there's several reasons we might be passed a non-ip value here.
 
 def ip_getstr(ip):
     """

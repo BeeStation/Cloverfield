@@ -103,10 +103,14 @@ def remove_ban():
     target_ban: db.Ban = db.Ban.from_id( request.args.get('id'))
 
     #Verify the data. If it's wrong close the session and abort.
-    if  target_ban.ckey != request.args.get('ckey') or \
-        target_ban.cid != int(request.args.get('compID')) or \
-        target_ban.ip != int(ip_getint(request.args.get('ip'))):
+    try:
+        if  target_ban.ckey != request.args.get('ckey') or \
+            target_ban.cid != int(request.args.get('compID')) or \
+            target_ban.ip != int(ip_getint(request.args.get('ip'))):
+            abort(400)
+    except Exception:
         abort(400)
+        #This is probably still vulnerable to some kinda timing attck but who cares it's spacebans.
     #Not finished tonight. TODO tomorrow.
     #Ban is correctly selected. Mark it deleted.
     target_ban.remove()
