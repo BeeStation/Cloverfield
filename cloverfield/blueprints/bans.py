@@ -110,7 +110,7 @@ def remove_ban():
     #Not finished tonight. TODO tomorrow.
     #Ban is correctly selected. Mark it deleted.
     target_ban.remove()
-    return
+    return jsonify("OK")
 
 @api_ban.route('/bans/edit/')
 def edit_ban():
