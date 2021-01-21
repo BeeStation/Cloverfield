@@ -186,7 +186,7 @@ def bans_sort_ip():
         searchval = '%'
     query: sqlalchemy.orm.query = session.query(db.Ban).filter(db.Ban.removed == int(request.args.get('removed')))\
         .filter(sqlalchemy.or_(
-            db.Ban.ip.like(ip_getint(searchval))
+            db.Ban.ip.like(ip_getint(searchval) if searchval.isdigit() else searchval)
         ))
     ret = dict()
     bans: list = query.limit(int(request.args.get('limit'))).all()
