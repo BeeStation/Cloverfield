@@ -57,9 +57,8 @@ def usec_issuejwt():
         'adm': request.args.get('administrator'),                   #Auditing.
         'arv': cfg["api_rev"]
     }
-    b_token = jwt.encode(pl,cfg["keys"]["usec_secret"],algorithm='HS512')
-    str_token = b_token.decode('utf-8')
-    return jsonify({"token":str_token})
+    token = jwt.encode(pl,cfg["keys"]["usec_secret"],algorithm='HS512')
+    return jsonify({"token":token})
 
 #FIXME DISABLE IN PRODUCTION.
 @api_secure.route('/usec/auth/test/')
