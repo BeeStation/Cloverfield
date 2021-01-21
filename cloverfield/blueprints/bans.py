@@ -110,6 +110,18 @@ def remove_ban():
     #Not finished tonight. TODO tomorrow.
     #Ban is correctly selected. Mark it deleted.
     target_ban.remove()
+    asyncio.run(hub_callback('deleteBan',{"ban":{
+        "id":target_ban.id,
+        "ckey":target_ban.ckey,
+        "ip":ip_getstr(target_ban.ip) if target_ban.ip != -1 else 'N/A',
+        "compID":target_ban.cid if target_ban.cid != -1 else 'N/A',
+        "akey":str(request.args.get('akey')),
+        "oakey":target_ban.oakey,
+        "reason":target_ban.reason,
+        "timestamp":target_ban.timestamp,
+        "previous":target_ban.previous,
+        "chain":target_ban.chain
+    }}, secure=True))
     return jsonify("OK")
 
 @api_ban.route('/bans/edit/')
