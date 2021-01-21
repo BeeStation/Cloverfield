@@ -9,12 +9,14 @@ class JSON_Goon(JSONEncoder):
             if isinstance(o, Ban):
                 if o.oakey is None: #For some reason they didn't decide to accept 'null'...
                     o.oakey = 'N/A'
-                return {'ckey': o.ckey,
+                return {
+                    'id': o.id,
+                    'ckey': o.ckey,
                     'ip': o.ip,
                     'compID':  o.cid,
-                    'reason':  o.reason,
-                    'oakey':  o.oakey,
                     'akey':  o.akey,
+                    'oakey':  o.oakey,
+                    'reason':  o.reason,
                     'timestamp': o.timestamp,
                     'previous':  o.previous,
                     'chain':  o.chain,
