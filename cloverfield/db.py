@@ -404,12 +404,13 @@ class PlayerNote(decbase):
             return None
 
     @classmethod
-    def add(cls, server_key, server_id, ckey, akey, note):
+    def add(cls, server_key, server_id, ckey, akey, note_txt):
         note = cls(
             server_key,
             server_id,
             ckey,
-            akey
+            akey,
+            note_txt
         )
         session.add(note)
         session.commit()
