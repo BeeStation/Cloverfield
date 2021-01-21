@@ -7,6 +7,7 @@ Group=www-data
 WorkingDirectory=/opt/clover/cloverfield
 Environment="PATH=/opt/clover/cloverfield/venv/bin"
 ExecStart=/opt/clover/cloverfield/venv/bin/uwsgi --ini clover_uwsgi.ini
+KillSignal=SIGQUIT #Thanks uWSGI.
 
 [Install]
 WantedBy=multi-user.target
