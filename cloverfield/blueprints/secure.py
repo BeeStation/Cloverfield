@@ -111,7 +111,7 @@ def bans_sort_all():
     bans: list = query.limit(int(request.args.get('limit'))).all()
     x:db.Ban
     for x in bans:
-        ret.update({str(x.id): flask.json.loads(flask.json.dumps(x))})
+        ret.update({x.id: flask.json.loads(flask.json.dumps(x))})
     ret.update({'total': query.count()})
     return ret
 
@@ -127,7 +127,7 @@ def bans_sort_ckey():
     bans: list = query.limit(int(request.args.get('limit'))).all()
     x:db.Ban
     for x in bans:
-        ret.update({str(x.id): flask.json.loads(flask.json.dumps(x))})
+        ret.update({x.id flask.json.loads(flask.json.dumps(x))})
     ret.update({'total': query.count()})
     return ret
 
@@ -144,7 +144,7 @@ def bans_sort_akey():
     bans: list = query.limit(int(request.args.get('limit'))).all()
     x:db.Ban
     for x in bans:
-        ret.update({str(x.id): flask.json.loads(flask.json.dumps(x))})
+        ret.update({x.id: flask.json.loads(flask.json.dumps(x))})
     ret.update({'total': query.count()})
     return ret
 
@@ -160,7 +160,7 @@ def bans_sort_reason():
     bans: list = query.limit(int(request.args.get('limit'))).all()
     x:db.Ban
     for x in bans:
-        ret.update({str(x.id): flask.json.loads(flask.json.dumps(x))})
+        ret.update({x.id: flask.json.loads(flask.json.dumps(x))})
     ret.update({'total': query.count()})
     return ret
 
@@ -176,7 +176,7 @@ def bans_sort_compID():
     bans: list = query.limit(int(request.args.get('limit'))).all()
     x:db.Ban
     for x in bans:
-        ret.update({str(x.id): flask.json.loads(flask.json.dumps(x))})
+        ret.update({x.id: flask.json.loads(flask.json.dumps(x))})
     ret.update({'total': query.count()})
     return ret
 
@@ -192,7 +192,7 @@ def bans_sort_ip():
     bans: list = query.limit(int(request.args.get('limit'))).all()
     x:db.Ban
     for x in bans:
-        ret.update({str(x.id): flask.json.loads(flask.json.dumps(x))})
+        ret.update({x.id: flask.json.loads(flask.json.dumps(x))})
     ret.update({'total': query.count()})
     return ret
 
