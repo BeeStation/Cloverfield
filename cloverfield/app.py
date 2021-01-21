@@ -1,4 +1,3 @@
-from cloverfield.db import session
 from cloverfield.util.orm_serializers import JSON_Goon
 from cloverfield.extensions import sqlalchemy_ext
 from cloverfield.settings import cfg
@@ -18,8 +17,8 @@ from elasticapm.contrib.flask import ElasticAPM
 from cloverfield.blueprints import participation, secret_sauce, extras, bans, cloud, stubbed_routes, round_tracking, antags, secure, notes, exptracking, map_rotation
 
 
-def register_extensions(app):
-    sqlalchemy_ext.init_app(app)
+def register_extensions(reg_app):
+    sqlalchemy_ext.init_app(reg_app)
 
 def create_app():
     app = Flask(__name__)
@@ -44,8 +43,12 @@ def create_app():
         'SERVER_URL': cfg["apm"]["url"],
         'DEBUG': True,
         'SANITIZE_FIELD_NAMES': (
+            #Infrastructure Security
             'auth',
+            'api_key',
+            #Player Safety
             'compID',
+            'compid', #Not sure if either of these work.
             'ip',
             'cid'
         )
@@ -54,8 +57,8 @@ def create_app():
     return app
 
 app = create_app()
-apm = None
-if(cfg["apm"]["enabled"]):
+apm = None #pylint: disable=invalid-name
+if cfg["apm"]["enabled"]:
     apm = ElasticAPM(app)
 
 #Register segmented modules.
