@@ -104,8 +104,8 @@ def remove_ban():
 
     #Verify the data. If it's wrong close the session and abort.
     if  target_ban.ckey != request.args.get('ckey') or \
-        target_ban.cid != request.args.get('compID') or \
-        target_ban.ip != ip_getint(request.args.get('ip')):
+        target_ban.cid != int(request.args.get('compID')) or \
+        target_ban.ip != int(ip_getint(request.args.get('ip'))):
         abort(400)
     #Not finished tonight. TODO tomorrow.
     #Ban is correctly selected. Mark it deleted.
