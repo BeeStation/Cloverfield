@@ -30,7 +30,7 @@ def handle_roundstate():
         return jsonify("OK")
 
     if(request.args.get('round_status') == 'end'):
-        rnd: Round_Entry = Round_Entry.get_latest(session, request.args.get('round_server'))
+        rnd: Round_Entry = Round_Entry.get_latest(request.args.get('round_server'))
         rnd.mark_end(request.args.get('round_name'), request.args.get('mode'), request.args.get('end_reason'))
         return jsonify("OK")
 
