@@ -48,6 +48,7 @@ def create_app():
             'api_key',
             #Player Safety
             'compID',
+            'compid', #Not sure if either of these work.
             'ip',
             'cid'
         )
