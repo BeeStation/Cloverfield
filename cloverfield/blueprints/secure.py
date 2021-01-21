@@ -127,7 +127,7 @@ def bans_sort_ckey():
     bans: list = query.limit(int(request.args.get('limit'))).all()
     x:db.Ban
     for x in bans:
-        ret.update({x.id flask.json.loads(flask.json.dumps(x))})
+        ret.update({x.id: flask.json.loads(flask.json.dumps(x))})
     ret.update({'total': query.count()})
     return ret
 
