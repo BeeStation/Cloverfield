@@ -33,7 +33,7 @@ def check_ban():
     #Do we care about bee bans?
     if cfg["check_beebans"]:
         #If they have a beeban, we don't need to care about checking clover-related bans.
-        list: beebans = fetch_beebans(player.ckey)
+        beebans: list = fetch_beebans(player.ckey)
         if beebans is not None:
             return jsonify(beebans)
 
