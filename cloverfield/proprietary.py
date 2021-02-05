@@ -89,4 +89,4 @@ def fetch_beebans(ply: str):
         "compID": "N/A",
         "timestamp": 0 # Mirror bans are visually permanent as we don't control them.
     }
-    return [1, final_ban]
+    return [2, final_ban] #I hate goon sometimes.
