@@ -2,6 +2,10 @@ api_rev = 1
 
 callback_timeout = 10
 
+#I'm so tempted to make this not a config option, but it absolutely
+#should be. -franc
+check_beebans = 1
+
 [keys]
 api_key = "$CLVF_API_KEY"
 cloud_key = "$CLVF_CLOUD_KEY"
