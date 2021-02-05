@@ -53,7 +53,7 @@ def fetch_beebans(ply: str):
     """
     r = requests.get('https://beestation13.com/api/bans', params={"ckey": ply})
     bans: list = r.json()
-    if(bans["error"])
+    if(bans["error"]):
         return None #Player doesn't have a beestation record.
     current_time: int = None # Allocate but don't bother calculating this yet.
     active_ban: dict = None # Allocate a holder for the found ban.
