@@ -1,9 +1,11 @@
 from cloverfield import db
 
 from cloverfield.db import session, Player, Ban
-from cloverfield.util.helpers import check_allowed, ip_getint, ip_getstr
+from cloverfield.settings import cfg
 from cloverfield.statics.database import *
+from cloverfield.proprietary import fetch_beebans
 from cloverfield.util.topic import hub_callback
+from cloverfield.util.helpers import check_allowed, ip_getint, ip_getstr
 
 import datetime
 import asyncio
@@ -27,6 +29,14 @@ def check_ban():
     #Generate Return
     if player.flags & FLAG_EXEMPT:#Exempt. We're done here.
         return jsonify({'exempt': True}) #NOTE: This stuff looks legacy. Is it still meant to be functional? -F
+
+    #Do we care about bee bans?
+    if cfg["check_beebans"]:
+        #If they have a beeban, we don't need to care about checking clover-related bans.
+        list: beebans = fetch_beebans(player.ckey)
+        if beebans is not None:
+            return jsonify(beebans)
+
 
     #Interrogate the ban table for the latest.
     all_matching_bans: list = list()
