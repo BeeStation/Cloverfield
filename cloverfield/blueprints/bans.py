@@ -75,6 +75,8 @@ def check_ban():
 @api_ban.route('/bans/add/')#Fucking CALLS BACK W H Y
 def issue_ban(): #OH GOD TIMESTAMPS ARE BYOND ERA
     check_allowed(True)
+    if request.args.get('server') == "MIRROR"
+        return "OK", 202 #Mirror ban fuckup prevention.
     new_ban = Ban.add(
         ckey =      request.args.get('ckey'),
         ip =        ip_getint(request.args.get('ip')) if request.args.get('ip') != 'N/A' else -1,

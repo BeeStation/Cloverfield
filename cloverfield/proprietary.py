@@ -81,6 +81,10 @@ def fetch_beebans(ply: str):
         "ckey": active_ban["ckey"],
         "oakey": active_ban["admin"],
         "server": "MIRROR", #Shows the ban as local and gives me a trigger value to reference in DM, if I bother.
+
+        # It screams if these don't exist, apparently.
+        "ip": "N/A",
+        "compID": "N/A",
         "timestamp": 0 # Mirror bans are visually permanent as we don't control them.
     }
     return [1, final_ban]
