@@ -14,7 +14,7 @@ from elasticapm.contrib.flask import ElasticAPM
 
 
 #Import prints.
-from cloverfield.blueprints import participation, secret_sauce, extras, bans, cloud, stubbed_routes, round_tracking, antags, secure, notes, exptracking, map_rotation
+from cloverfield.blueprints import participation, secret_sauce, extras, bans, cloud, stubbed_routes, round_tracking, antags, secure, notes, exptracking, map_rotation, vpn_detection
 
 
 def register_extensions(reg_app):
@@ -74,6 +74,7 @@ app.register_blueprint(secure.api_secure)
 app.register_blueprint(notes.api_notes)
 app.register_blueprint(exptracking.api_exptrak)
 app.register_blueprint(map_rotation.api_maprotation)
+app.register_blueprint(vpn_detection.vpn_detection)
 
 app.json_encoder = JSON_Goon #Overwrite the default encoder to serialize bans.
 
