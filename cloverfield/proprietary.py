@@ -70,7 +70,7 @@ def fetch_beebans(ply: str):
             break
         if current_time is None:
             current_time = int(time.time())
-        if current_time < row["expire_date"]:
+        if current_time > row["expire_date"]:
             continue
         active_ban = row
         break
