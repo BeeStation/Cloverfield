@@ -45,7 +45,7 @@ def record_participation(ckey, mode):
     if ckey is None:
         return 1
     ply: db.Player = db.Player.from_ckey(ckey)
-    basic_part: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == "participation_basic").one()
+    basic_part: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == "participation_basic").one_or_none()
     #I have no idea how this could possibly happen but sure okay
     if basic_part is None: #New player, Fill in their record.
         basic_part = Participation_Record.add(
