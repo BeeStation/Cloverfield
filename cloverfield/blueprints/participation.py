@@ -48,7 +48,7 @@ def record_participation(ckey, mode):
     basic_part: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == "participation_basic").one_or_none()
     #I have no idea how this could possibly happen but sure okay
     if basic_part is None: #New player, Fill in their record.
-        basic_part = Participation_Record.add(
+        basic_part = db.Participation_Record.add( #I need to consolidate the way I do my goddamn imports.
             request.args.get('ckey'),
             "participation_basic",
             0
