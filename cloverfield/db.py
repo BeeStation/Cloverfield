@@ -237,6 +237,14 @@ class CloudSave(decbase):
         session.commit()
         return sav
 
+    def update(self, val):
+        """
+        Update the profile data stored in a particular save.
+        """
+        self.save = val
+        session.commit()
+
+
 class CloudData(decbase):
     __tablename__ = 'clouddata'
 

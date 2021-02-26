@@ -33,7 +33,11 @@ def cloud_hell():
             data.update({x.key:x.value})
         return jsonify({"saves":saves,"cdata":data})
     if route == 'put': #Okay shit we actually have to store things.
-        sav: CloudSave = CloudSave.add(
+        sav: CloudSave = session.query(CloudSave).filter(CloudSave.ckey == player.ckey).filter(CloudSave.save_name == request.args.get('name')).one_or_none()
+        if sav is not None: #Delete the previously existing file.
+            sav.update(request.args.get('data'))
+            return jsonify({"status":"OK"})
+        sav = CloudSave.add(
             player.ckey,
             request.args.get('name'),
             request.args.get('data')
