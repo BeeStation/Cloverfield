@@ -46,6 +46,13 @@ def record_participation(ckey, mode):
         return 1
     ply: db.Player = db.Player.from_ckey(ckey)
     basic_part: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == "participation_basic").one()
+    #I have no idea how this could possibly happen but sure okay
+    if basic_part is None: #New player, Fill in their record.
+        basic_part = Participation_Record.add(
+            request.args.get('ckey'),
+            "participation_basic",
+            0
+        )
     basic_part.record()
     mode_str: str = "participation_"+mode
     mode_seen: db.Participation_Record = ply.participation.filter(db.Participation_Record.recordtype == mode_str).one_or_none()
